@@ -1,0 +1,6 @@
+*.exe
+*.o
+*.out
+entrada*.txt
+saida*.txt
+erro*.txt
