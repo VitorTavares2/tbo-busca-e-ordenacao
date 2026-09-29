@@ -1,39 +1,46 @@
-# Módulo 1 — Buscas Categóricas e Compostas
+# Módulo 1: Buscas Categóricas e Compostas
 
-Implementação em C++ do Módulo 1 do Projeto 1 (Busca e Ordenação): consulta de
-filmes e cinemas por tipo e por gênero, com filtros combináveis usando `E`/`OU`.
+Programa em C++ que busca filmes e cinemas por **tipo** (ex: `movie`) e por
+**gênero** (ex: `Comedy`). Os filtros podem ser combinados com **E** ou **OU**.
 
-## Estrutura
+Para uma explicação detalhada de como o programa funciona por dentro, veja
+**[FUNCIONAMENTO.md](FUNCIONAMENTO.md)**.
 
-- `src/modelos.h` — structs `Filme` e `Cinema`.
-- `src/texto.h` / `texto.cpp` — funções de divisão de texto (`dividir`, `aparar`), usadas pra ler os arquivos sem depender de bibliotecas externas.
-- `src/carregador.h` / `carregador.cpp` — leitura de `dados/filmesCrop.txt` (TSV) e `dados/cinemas.txt` (CSV).
-- `src/indice.h` / `indice.cpp` — `IndiceCategoria` (vetor de índices por tipo/gênero, construído no carregamento) e as funções `intersecao`/`uniao` usadas pra combinar filtros.
-- `src/cache.h` / `cache.cpp` — `CacheConsultas`, guarda o resultado das últimas buscas pra não repetir o processamento.
-- `src/main.cpp` — menu interativo no console.
+## O que você precisa
 
-## Como funciona
+- Um compilador C++ com suporte a C++17. Exemplo: `g++` do [MinGW-w64](https://www.mingw-w64.org/) no Windows.
 
-1. No carregamento, cada filme é indexado por `tipo` (ex: `movie`, `tvEpisode`) e por cada `gênero` que possui — isso evita varrer a base inteira a cada busca.
-2. O usuário monta uma busca com um ou mais filtros (`tipo` ou `gênero`) e escolhe como combiná-los (`E` = interseção, `OU` = união).
-3. O resultado é guardado no cache com uma chave baseada nos filtros/operador — se a mesma busca for repetida, o resultado sai do cache em vez de ser recalculado.
-4. A busca de cinemas reaproveita o mesmo filtro de filmes: acha os filmes que atendem aos critérios e depois verifica quais cinemas exibem pelo menos um deles.
-5. O tempo de carregamento e o tempo de cada busca são sempre exibidos.
+## Como compilar e rodar
 
-## Compilar e rodar
+Abra o terminal **dentro da pasta `modulo1`** e rode:
 
 ```powershell
-cd "C:\Users\Vitor\Documents\Sistema Notificações SydleOne\major\tbo\projeto1\modulo1"
 g++ -O2 -std=c++17 src\*.cpp -o busca.exe
 .\busca.exe
 ```
 
-O programa espera ser executado a partir da pasta `modulo1` (ele lê `dados/filmesCrop.txt` e `dados/cinemas.txt` com caminho relativo).
+No Linux/macOS:
+
+```bash
+g++ -O2 -std=c++17 src/*.cpp -o busca
+./busca
+```
+
+> **Importante:** o programa precisa ser executado de dentro da pasta
+> `modulo1`, porque ele procura os arquivos em `dados/filmesCrop.txt` e
+> `dados/cinemas.txt`. Se rodar de outra pasta, ele abre com 0 filmes carregados.
 
 ## Exemplo de uso
 
 ```
+Filmes carregados: ...
+Cinemas carregados: 399
+Tempo de carregamento: ... s
+
 1 - Buscar filmes por tipo/genero
+2 - Buscar cinemas que exibem filmes por tipo/genero
+0 - Sair
+Escolha uma opcao: 1
 Quantos filtros? 2
 Filtro 1 - tipo ou genero (T/G)? T
 Valor: movie
@@ -42,4 +49,45 @@ Valor: Comedy
 Combinar filtros com E ou OU? E
 ```
 
-Retorna os filmes do tipo `movie` **e** gênero `Comedy`.
+Resultado: os filmes do tipo `movie` **e** do gênero `Comedy`. Se a mesma
+busca for feita de novo, aparece `Veio do cache: sim`.
+
+> Os valores diferenciam maiúsculas de minúsculas: `Comedy` funciona, `comedy` não.
+
+## Estrutura de pastas
+
+```
+modulo1/
+├── README.md            ← este arquivo (como rodar)
+├── FUNCIONAMENTO.md     ← como o programa funciona por dentro
+├── Doxyfile             ← configuração para gerar a documentação em HTML
+├── dados/
+│   ├── filmesCrop.txt   ← ~584 mil filmes (colunas separadas por tabulação)
+│   └── cinemas.txt      ← 399 cinemas (colunas separadas por vírgula)
+└── src/
+    ├── modelos.h        ← quais dados são guardados de um filme e de um cinema
+    ├── texto.h/.cpp     ← cortar e limpar textos
+    ├── carregador.h/.cpp← ler os arquivos de dados
+    ├── indice.h/.cpp    ← índices por tipo/gênero e operações E / OU
+    ├── cache.h/.cpp     ← guardar buscas já feitas
+    └── main.cpp         ← menu e buscas
+```
+
+## Documentação do código
+
+Todo o código-fonte é comentado no padrão **Doxygen**, o formato mais comum
+de documentação em C++:
+
+- Cada arquivo começa com `@file` e `@brief`, dizendo para que ele serve.
+- Nos arquivos `.h` fica **o que** cada função faz: `@brief`, `@param` (o que
+  recebe), `@return` (o que devolve), `@note` e `@warning` (cuidados).
+- Nos arquivos `.cpp` fica **como** cada função faz, passo a passo.
+
+Para gerar um site HTML navegável a partir desses comentários, instale o
+[Doxygen](https://www.doxygen.nl/) e rode, dentro de `modulo1`:
+
+```bash
+doxygen Doxyfile
+```
+
+O resultado fica em `docs/html/index.html`.

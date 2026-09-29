@@ -1,0 +1,18 @@
+# Configuração do Doxygen para gerar a documentação do Módulo 1 em HTML.
+# Uso (dentro da pasta modulo1):  doxygen Doxyfile
+# Resultado:                      docs/html/index.html
+
+PROJECT_NAME           = "TBO - Módulo 1: Buscas Categóricas e Compostas"
+OUTPUT_LANGUAGE        = Brazilian
+OUTPUT_DIRECTORY       = docs
+INPUT                  = src FUNCIONAMENTO.md
+USE_MDFILE_AS_MAINPAGE = FUNCIONAMENTO.md
+FILE_PATTERNS          = *.h *.cpp *.md
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+JAVADOC_AUTOBRIEF      = YES
+SOURCE_BROWSER         = YES
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+INPUT_ENCODING         = UTF-8
