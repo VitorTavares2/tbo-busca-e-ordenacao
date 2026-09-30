@@ -52,6 +52,7 @@ struct Cinema {
     double y;                          ///< Posição no mapa (eixo Y). Ainda não usada. Fica para o Módulo 3.
     double preco;                      ///< Preço do ingresso, em reais.
     std::vector<std::string> filmeIds; ///< Códigos dos filmes que este cinema está exibindo.
+    std::vector<int> filmePosicoes;    ///< Para cada código de `filmeIds`, a posição do filme na lista de filmes. `-1` se o código não existe. Preenchido por resolverFilmesDosCinemas().
 };
 
 #endif

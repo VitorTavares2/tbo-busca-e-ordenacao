@@ -44,3 +44,31 @@ std::string aparar(const std::string& texto) {
     }
     return texto.substr(inicio, fim - inicio);
 }
+
+/**
+ * Como funciona:
+ *  1. Tira os espaços das pontas.
+ *  2. Aceita um `-` no começo, se houver.
+ *  3. Confere se o resto tem de 1 a 9 caracteres e se todos são dígitos.
+ *  4. Monta o número dígito por dígito (cada dígito novo empurra os anteriores
+ *     uma casa para a esquerda: 9, depois 90, depois 900...).
+ */
+bool converterInteiro(const std::string& texto, int& valor) {
+    const size_t MAXIMO_DE_DIGITOS = 9;
+    std::string limpo = aparar(texto);
+    bool negativo = !limpo.empty() && limpo[0] == '-';
+    std::string digitos = negativo ? limpo.substr(1) : limpo;
+
+    if (digitos.empty() || digitos.size() > MAXIMO_DE_DIGITOS) {
+        return false;
+    }
+    int resultado = 0;
+    for (char c : digitos) {
+        if (c < '0' || c > '9') {
+            return false;
+        }
+        resultado = resultado * 10 + (c - '0');
+    }
+    valor = negativo ? -resultado : resultado;
+    return true;
+}

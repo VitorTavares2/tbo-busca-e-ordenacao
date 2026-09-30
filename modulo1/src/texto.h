@@ -39,4 +39,18 @@ std::vector<std::string> dividir(const std::string& texto, char delimitador);
  */
 std::string aparar(const std::string& texto);
 
+/**
+ * @brief Transforma um texto em número inteiro, só se o texto for um número de verdade.
+ *
+ * Exemplos: `"90"` vira 90, `" -5 "` vira -5 (os espaços das pontas são ignorados).
+ * Não são aceitos: `"abc"`, `"12abc"`, `"1.5"`, texto vazio e `"-"`.
+ *
+ * @param texto O texto digitado ou lido do arquivo.
+ * @param valor Recebe o número quando a conversão dá certo. Fica como estava quando dá errado.
+ * @return `true` se o texto era um número inteiro, `false` caso contrário.
+ *
+ * @note Números com mais de 9 dígitos são recusados. Isso evita estourar o tamanho de um `int`.
+ */
+bool converterInteiro(const std::string& texto, int& valor);
+
 #endif

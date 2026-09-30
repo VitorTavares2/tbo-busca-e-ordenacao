@@ -1,0 +1,82 @@
+=== Testes Modulo 1 e 2 - 2026-09-30 20:54:26 ===
+Compilador: g++.exe (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r4) 16.1.0
+
+--- 1. Compilacao ---
+OK     | programa compila sem avisos                          | esperado=0 avisos | obtido=0 avisos | -
+
+--- 2. Arvore (unitarios) ---
+20/20 verificacoes passaram
+OK     | testes da arvore                                     | esperado=sem falhas | obtido=sem falhas | -
+
+--- Contas de referencia (awk direto nos arquivos) ---
+anos diferentes: 134 | duracoes diferentes: 372
+
+--- 3. Modulo 1 continua igual ao de antes ---
+OK     | 8 consultas do modulo 1 iguais a saida de referencia | esperado=0 diferencas | obtido=0 diferencas | -
+
+--- 4. Tabela de casos (1 consulta por caso) ---
+OK     | filmes por ano 2000..2000                            | esperado=5192     | obtido=5192     | 0.010 ms
+OK     | filmes por ano 1885..1885                            | esperado=1        | obtido=1        | 0.004 ms
+OK     | filmes por ano 2026..2026                            | esperado=1        | obtido=1        | 0.003 ms
+OK     | filmes por ano 1990..1999                            | esperado=57239    | obtido=57239    | 0.221 ms
+OK     | filmes por ano 1885..2026                            | esperado=559303   | obtido=559303   | 1.491 ms
+OK     | filmes por ano 1800..1850                            | esperado=0        | obtido=0        | 0.003 ms
+OK     | filmes por ano 2100..2200                            | esperado=0        | obtido=0        | 0.003 ms
+OK     | filmes por duracao 90..90 min                        | esperado=1484     | obtido=1484     | 0.005 ms
+OK     | filmes por duracao 0..0 min                          | esperado=0        | obtido=0        | 0.003 ms
+OK     | filmes por duracao 90..120 min                       | esperado=8501     | obtido=8501     | 0.018 ms
+OK     | filmes por duracao 1..59 min                         | esperado=153039   | obtido=153039   | 0.320 ms
+OK     | filmes por duracao 180..60000 min                    | esperado=1275     | obtido=1275     | 0.009 ms
+OK     | filmes por duracao 99000..99999 min                  | esperado=0        | obtido=0        | 0.003 ms
+OK     | cinemas por ano 2000..2000                           | esperado=24       | obtido=24       | 0.099 ms
+OK     | cinemas por ano 1990..2010                           | esperado=239      | obtido=239      | 0.412 ms
+OK     | cinemas por ano 1800..1850                           | esperado=0        | obtido=0        | 0.120 ms
+OK     | cinemas por ano 1885..2026                           | esperado=391      | obtido=391      | 1.630 ms
+OK     | ano final vazio = ano exato (2000)                   | esperado=5192     | obtido=5192     | -
+
+--- 5. Erros de digitacao e arquivos faltando ---
+OK     | letras no menu nao travam, mostram erro              | esperado=contem 'Erro' | obtido=sim      | -
+OK     | opcao fora do menu mostra erro                       | esperado=contem 'Erro' | obtido=sim      | -
+OK     | duracao com letras pede de novo                      | esperado=contem 'Erro' | obtido=sim      | -
+OK     | duracao com letras: depois aceita 90..100            | esperado=4464     | obtido=4464     | -
+OK     | duracao negativa mostra erro                         | esperado=contem 'Erro' | obtido=sim      | -
+OK     | minimo maior que maximo mostra erro                  | esperado=contem 'minimo' | obtido=sim      | -
+OK     | minimo>maximo: depois aceita 90..120                 | esperado=8501     | obtido=8501     | -
+OK     | ano gigante mostra erro                              | esperado=contem 'Erro' | obtido=sim      | -
+OK     | operador invalido mostra erro                        | esperado=contem 'Erro' | obtido=sim      | -
+OK     | operador invalido: depois aceita E (3382)            | esperado=3382     | obtido=3382     | -
+OK     | zero filtros mostra erro                             | esperado=contem 'Erro' | obtido=sim      | -
+OK     | genero \N (sem genero) nao vira categoria            | esperado=0        | obtido=0        | -
+OK     | 0 resultados explica maiusculas/minusculas           | esperado=contem 'maiusculas' | obtido=sim      | -
+OK     | entrada acaba no meio: termina sem travar            | esperado=contem 'codigo=0' | obtido=sim      | -
+OK     | sem a pasta dados: mostra erro claro                 | esperado=contem 'Erro' | obtido=sim      | -
+OK     | sem a pasta dados: termina com codigo 1              | esperado=contem 'codigo=1' | obtido=sim      | -
+OK     | arquivos com final de linha do Windows: 2 filmes validos (1 e 4) + 1 sem ano (2) | esperado=3        | obtido=3        | -
+OK     | linhas com defeito sao puladas e avisadas (2 filmes, 1 cinema) | esperado=contem 'filmes: 2, cinemas: 1' | obtido=sim      | -
+OK     | genero \N vira lista vazia mesmo com final de linha do Windows | esperado=0        | obtido=0        | -
+OK     | ano 2001 acha os 2 filmes validos                    | esperado=2        | obtido=2        | -
+OK     | cinema com filme que nao existe: so o cinema bom aparece | esperado=1        | obtido=1        | -
+
+--- 6. Casos em cascata (varias consultas na mesma sessao) ---
+OK     | C1 duracao 90..120 repetida da o mesmo total         | esperado=8501     | obtido=8501     | -
+OK     | C1 segunda vez vem do cache                          | esperado=sim      | obtido=sim      | -
+OK     | C1 90..105 + 106..120 = 90..120                      | esperado=8501     | obtido=8501     | -
+OK     | C2 ano 2000..2009 + 2010..2019 = 2000..2019          | esperado=389418   | obtido=389418   | -
+OK     | C3 cinemas de 1990..2010 (repetida) mesmo total      | esperado=239      | obtido=239      | -
+OK     | C3 cinemas do ano 2000 <= cinemas de 1990..2010      | esperado=<= 239   | obtido=24       | -
+OK     | C4 cinemas do ano 2000 nao reaproveitam cache de filmes | esperado=nao      | obtido=nao      | -
+OK     | C5 modulo 1 e modulo 2 na mesma sessao: movie E Comedy repete | esperado=3382     | obtido=3382     | -
+OK     | C5 segunda busca de movie E Comedy vem do cache      | esperado=sim      | obtido=sim      | -
+
+--- 7. Volume: centenas de consultas em uma unica sessao ---
+552 consultas de filmes | sessao inteira: 0.9 s | carregamento: 0.698184 s
+tempo de busca -> consultas=552 total=16.16ms media=0.0293ms minimo=0.0000ms maximo=0.8890ms
+detalhe de cada consulta: tests/logs/volume_consultas.tsv
+OK     | volume: 552 consultas de filmes conferidas com awk   | esperado=0 erros  | obtido=0 erros  | -
+OK     | volume: nenhuma consulta ficou sem resposta          | esperado=552      | obtido=552      | -
+
+--- 7b. Volume de cinemas: um ano por vez ---
+tempo de busca (cinemas) -> consultas=151 total=2.73ms media=0.0181ms minimo=0.0080ms maximo=0.3920ms
+OK     | volume: 151 consultas de cinemas conferidas com awk  | esperado=0 erros  | obtido=0 erros  | -
+
+=== Resultado: 54/54 verificacoes OK, 0 falhas ===

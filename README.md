@@ -86,10 +86,11 @@ A apresentação deve explicar como o trabalho foi feito, quais módulos foram e
 | Módulo | Situação | Onde |
 |---|---|---|
 | 1: Buscas Categóricas e Compostas | Implementado | [`modulo1/`](modulo1/) |
-| 2 a 5 | Não iniciados | — |
+| 2: Buscas de Intervalo Numérico | Implementado | [`modulo1/`](modulo1/) (`src/arvore.cpp`) |
+| 3 a 5 | Não iniciados | — |
 
 ## Documentação
 
-- **[modulo1/README.md](modulo1/README.md)**: como compilar e rodar o Módulo 1.
-- **[modulo1/FUNCIONAMENTO.md](modulo1/FUNCIONAMENTO.md)**: como o programa funciona por dentro, o que cada arquivo faz e as limitações conhecidas.
+- **[modulo1/README.md](modulo1/README.md)**: como compilar, rodar e testar os Módulos 1 e 2.
+- **[modulo1/FUNCIONAMENTO.md](modulo1/FUNCIONAMENTO.md)**: como o programa funciona por dentro (índices, árvore, cache), o que cada arquivo faz, como foi testado e as limitações conhecidas.
 - O código-fonte é comentado no padrão **Doxygen**. Para gerar um site HTML com a documentação, rode `doxygen Doxyfile` dentro de `modulo1`.

@@ -8,6 +8,9 @@
  *
  * Exemplo de chave: `filme|E|tipo=movie|genero=Comedy`
  * (quer dizer: busca de filmes, operação E, tipo movie, gênero Comedy).
+ *
+ * Buscas por número também entram no cache. Exemplo: `filme|ano=2000..2010`
+ * (filmes lançados de 2000 a 2010).
  */
 
 #ifndef CACHE_H
