@@ -43,8 +43,8 @@ g++ -O2 -std=c++17 src/*.cpp -o busca
 ```
 Filmes carregados: 584121
 Cinemas carregados: 400
-Arvore de anos: 134 anos diferentes (altura 9)
-Arvore de duracoes: 372 duracoes diferentes (altura 10)
+Arvore de anos: 134 anos diferentes (altura 8)
+Arvore de duracoes: 372 duracoes diferentes (altura 9)
 Tempo de carregamento: 0.7 s
 
 1 - Buscar filmes por tipo/genero

@@ -20,12 +20,17 @@
  *    que 95, ele ignora a esquerda inteira e vai só para a direita. Isso
  *    descarta metade dos dados a cada passo.
  *
- * Filmes com o mesmo número (por exemplo, vários filmes de 90 minutos) ficam
- * juntos na MESMA entrada da árvore. A entrada guarda a lista de posições deles.
+ * A árvore é usada em duas fases:
+ *  1. **Separar** (`adicionar`): cada filme vai para o "balde" do seu número.
+ *     O balde 90 guarda todos os filmes de 90 minutos. Como os baldes ficam
+ *     numa lista na posição do próprio número, eles já estão em ordem crescente.
+ *  2. **Montar** (`montar`): com os números já em ordem, o do MEIO vira o topo
+ *     da árvore, a metade menor vira o lado esquerdo e a metade maior vira o
+ *     lado direito. O mesmo é feito em cada metade, até não sobrar nada.
  *
- * A árvore é do tipo AVL: depois de cada inclusão ela se reorganiza sozinha
- * para não ficar torta. Sem isso, números que chegam em ordem (1, 2, 3, 4...)
- * formariam uma "escada" e a busca voltaria a ser lenta.
+ * Como o topo é sempre o meio, os dois lados têm o mesmo tamanho (ou diferem
+ * em 1). A árvore já nasce equilibrada e nunca precisa ser reorganizada,
+ * porque depois do carregamento nenhum filme novo entra.
  */
 
 #ifndef ARVORE_H
@@ -46,16 +51,25 @@ public:
     /**
      * @brief Anota que o filme da posição `indiceFilme` tem o número `valor`.
      *
-     * Se o número ainda não está na árvore, uma entrada nova é criada.
-     * Se já está, o filme é colocado no fim da lista daquela entrada.
+     * O filme é colocado no fim do balde daquele número. A árvore só passa a
+     * enxergar o filme depois de `montar()`.
      *
      * @param valor        O número a guardar. Exemplo: `2008` (ano) ou `90` (minutos).
      * @param indiceFilme  Posição do filme na lista de filmes.
      *
      * @note Filmes sem ano ou sem duração (valor `-1`) não devem ser adicionados.
-     *       Quem chama esta função é que faz essa checagem.
+     *       Quem chama esta função é que faz essa checagem. Valores negativos
+     *       são ignorados.
      */
     void adicionar(int valor, int indiceFilme);
+
+    /**
+     * @brief Monta a árvore com todos os números adicionados até agora.
+     *
+     * Deve ser chamada uma vez, depois de adicionar todos os filmes e antes da
+     * primeira busca. Se for chamada de novo, a árvore é montada do zero.
+     */
+    void montar();
 
     /**
      * @brief Devolve as posições de todos os filmes cujo número está entre `minimo` e `maximo`.
@@ -72,7 +86,7 @@ public:
     std::vector<int> buscarIntervalo(int minimo, int maximo) const;
 
     /**
-     * @brief Diz quantos números DIFERENTES estão guardados.
+     * @brief Diz quantos números DIFERENTES estão na árvore montada.
      *
      * Exemplo: três filmes de 90 min e um de 100 min contam como 2 números.
      */
@@ -82,28 +96,24 @@ public:
      * @brief Diz quantos "andares" a árvore tem. Árvore vazia tem 0.
      *
      * Quanto menor, mais rápida é a busca. Com 1000 números diferentes, uma
-     * árvore bem arrumada tem uns 10 andares. Uma torta teria 1000.
+     * árvore montada pelo meio tem 10 andares. Uma torta teria 1000.
      */
     int altura() const;
 
 private:
-    /// Uma entrada da árvore: um número e os filmes que têm esse número.
+    /// Uma entrada da árvore. Os filmes dela ficam em `filmesPorValor[valor]`.
     struct No {
-        int valor;               ///< O número desta entrada.
-        std::vector<int> filmes; ///< Posições dos filmes que têm este número.
-        int esquerda;            ///< Posição do nó com números menores. `-1` se não houver.
-        int direita;             ///< Posição do nó com números maiores. `-1` se não houver.
-        int altura;              ///< Andares desta entrada para baixo. Uma entrada sem filhos tem 1.
+        int valor;    ///< O número desta entrada.
+        int esquerda; ///< Posição do nó com números menores. `-1` se não houver.
+        int direita;  ///< Posição do nó com números maiores. `-1` se não houver.
     };
 
-    std::vector<No> nos;  ///< Todas as entradas da árvore.
+    std::vector<std::vector<int>> filmesPorValor; ///< Os baldes: `filmesPorValor[90]` = filmes de 90.
+    std::vector<No> nos;  ///< Todas as entradas da árvore, em ordem crescente de número.
     int raiz = -1;        ///< Posição da entrada de cima. `-1` enquanto a árvore está vazia.
 
+    int ligar(int inicio, int fim);
     int alturaDe(int no) const;
-    void atualizarAltura(int no);
-    int girarDireita(int no);
-    int girarEsquerda(int no);
-    int inserir(int no, int valor, int indiceFilme);
     void coletar(int no, int minimo, int maximo, std::vector<int>& resultado) const;
 };
 

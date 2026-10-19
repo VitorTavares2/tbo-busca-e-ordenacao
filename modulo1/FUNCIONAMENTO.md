@@ -143,17 +143,34 @@ Buscar filmes de **95 a 130** minutos:
 4. Olha a direita do 120, o **150**. Passou de 130. Não entra.
 
 O programa visitou 4 caixinhas em vez de olhar todas. Com os dados reais, a
-árvore de durações tem 372 valores diferentes e 10 "andares", então qualquer
+árvore de durações tem 372 valores diferentes e 9 "andares", então qualquer
 busca visita poucas dezenas de caixinhas.
 
-### Por que a árvore se arruma sozinha
+### Como a árvore é montada já equilibrada
 
-Se os números chegassem em ordem (1, 2, 3, 4...), a árvore viraria uma
-"escada" de um lado só e a busca voltaria a ser lenta. Por isso a árvore é
-do tipo **AVL**: depois de cada inclusão ela confere se um lado ficou 2
-andares mais alto que o outro e, se ficou, gira as caixinhas para
-equilibrar. Nos testes, 1000 números em ordem formam uma árvore de 10
-andares, não de 1000.
+Se os números fossem entrando um por um na árvore em ordem (1, 2, 3, 4...),
+ela viraria uma "escada" de um lado só e a busca voltaria a ser lenta. Para
+evitar isso, a árvore é montada **de uma vez só**, depois que todos os filmes
+foram lidos, em duas fases:
+
+1. **Separar em baldes** (`adicionar`): cada filme vai para o balde do seu
+   número. O balde 90 guarda todos os filmes de 90 minutos. Os baldes ficam
+   numa lista na posição do próprio número, então já estão em ordem
+   crescente, sem precisar ordenar nada.
+2. **Montar pelo meio** (`montar`): com os números em ordem, o do **meio**
+   vira o topo da árvore. A metade menor vira o lado esquerdo e a metade
+   maior vira o lado direito, e o mesmo é feito em cada metade:
+
+```
+números em ordem:  45  60  75 [90] 100 120 150   → 90 é o topo
+metade menor:      45 [60] 75                     → 60 fica à esquerda do 90
+metade maior:                  100 [120] 150      → 120 fica à direita do 90
+```
+
+Como o topo é sempre o meio, os dois lados têm o mesmo tamanho (ou diferem
+em 1): a árvore já nasce com a menor altura possível. Como nenhum filme novo
+entra depois do carregamento, ela nunca precisa ser reorganizada. Nos testes,
+1000 números formam uma árvore de exatamente 10 andares, não de 1000.
 
 ### O que entra na árvore
 
@@ -302,7 +319,7 @@ Outros casos:
 | `src/arvore.h` / `arvore.cpp` | `ArvoreNumerica` guarda ano e duração e acha intervalos rapidamente (Módulo 2). |
 | `src/cache.h` / `cache.cpp` | `CacheConsultas` guarda buscas já feitas e seus resultados. |
 | `src/main.cpp` | Carrega tudo, monta os índices e as árvores, mostra o menu e executa as buscas. |
-| `tests/teste_arvore.cpp` | Testes da árvore, um por regra. |
+| `tests/teste_arvore.cpp` | Testes da árvore, um por regra (30 verificações). |
 | `tests/rodar_testes.sh` | Roda todos os testes e grava o resultado em `tests/logs/`. |
 
 ### Funções do `main.cpp`
@@ -363,7 +380,7 @@ arquivos de dados, para que um erro do programa não passe despercebido.
 
 | Etapa | O que confere |
 |---|---|
-| Árvore | 20 verificações das regras da árvore (pontas do intervalo, valores repetidos, ordem, equilíbrio com 1000 números em ordem). |
+| Árvore | 30 verificações das regras da árvore (pontas do intervalo, valores repetidos, ordem, altura mínima com 1000 números, montar duas vezes). |
 | Módulo 1 igual ao de antes | 8 buscas do Módulo 1 dão os mesmos totais e os mesmos primeiros resultados da versão anterior (`tests/golden/`). |
 | Tabela de casos | 18 buscas de uma consulta só (ano, duração e cinemas por ano), incluindo intervalos vazios e pontas. |
 | Erros de digitação | 21 casos: letras, negativos, mínimo maior que máximo, operador inválido, pasta `dados` ausente, arquivo com final de linha do Windows, linhas com defeito. |

@@ -598,6 +598,8 @@ int main() {
             arvoreDuracao.adicionar(filmes[i].duracao, posicao);
         }
     }
+    arvoreAno.montar();
+    arvoreDuracao.montar();
 
     double segundosCarregamento = milissegundosDesde(inicioCarregamento) / 1000.0;
 

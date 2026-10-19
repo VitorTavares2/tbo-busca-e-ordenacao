@@ -6,116 +6,74 @@
 #include "arvore.h"
 
 /**
- * Altura de uma entrada. Posição `-1` (sem nó) conta como 0.
+ * Se o balde do número ainda não existe, a lista de baldes cresce até ele.
+ * Depois o filme vai para o fim do balde.
  */
-int ArvoreNumerica::alturaDe(int no) const {
-    return no < 0 ? 0 : nos[no].altura;
-}
-
-/**
- * A altura de uma entrada é 1 (ela mesma) mais a altura do lado mais alto.
- */
-void ArvoreNumerica::atualizarAltura(int no) {
-    int alturaEsquerda = alturaDe(nos[no].esquerda);
-    int alturaDireita = alturaDe(nos[no].direita);
-    nos[no].altura = 1 + (alturaEsquerda > alturaDireita ? alturaEsquerda : alturaDireita);
-}
-
-/**
- * Usada quando o lado ESQUERDO ficou alto demais. O filho da esquerda sobe e o
- * nó atual desce para a direita dele.
- *
- *        no                filho
- *       /  \              /     \
- *    filho  C    ->      A      no
- *    /  \                      /  \
- *   A    B                    B    C
- *
- * Os números continuam em ordem: A < filho < B < no < C.
- *
- * @return A posição da entrada que agora fica no topo.
- */
-int ArvoreNumerica::girarDireita(int no) {
-    int filho = nos[no].esquerda;
-    nos[no].esquerda = nos[filho].direita;
-    nos[filho].direita = no;
-    atualizarAltura(no);
-    atualizarAltura(filho);
-    return filho;
-}
-
-/**
- * O espelho de girarDireita(). Usada quando o lado DIREITO ficou alto demais.
- */
-int ArvoreNumerica::girarEsquerda(int no) {
-    int filho = nos[no].direita;
-    nos[no].direita = nos[filho].esquerda;
-    nos[filho].esquerda = no;
-    atualizarAltura(no);
-    atualizarAltura(filho);
-    return filho;
+void ArvoreNumerica::adicionar(int valor, int indiceFilme) {
+    if (valor < 0) {
+        return;
+    }
+    if (valor >= static_cast<int>(filmesPorValor.size())) {
+        filmesPorValor.resize(valor + 1);
+    }
+    filmesPorValor[valor].push_back(indiceFilme);
 }
 
 /**
  * Como funciona:
- *  1. Se chegou num lugar vazio, cria a entrada nova aqui.
- *  2. Se o número é igual ao da entrada, só coloca o filme na lista dela.
- *  3. Se é menor, desce para a esquerda. Se é maior, desce para a direita.
- *  4. Na volta da descida, confere se um lado ficou 2 andares mais alto que o
- *     outro. Se ficou, gira para equilibrar. São 4 casos:
- *       - esquerda alta, e o filho da esquerda pesa para a esquerda: 1 giro.
- *       - esquerda alta, e o filho da esquerda pesa para a direita: 2 giros.
- *       - direita alta: os mesmos dois casos, espelhados.
- *
- * Quem chama guarda o valor devolvido, porque o topo pode mudar depois de um giro.
+ *  1. Percorre os baldes do 0 para cima. Cada balde que tem filme vira uma
+ *     entrada em `nos`. Por isso `nos` fica em ordem crescente de número,
+ *     sem precisar ordenar nada.
+ *  2. Chama ligar() na lista inteira para escolher o topo e os filhos.
  */
-int ArvoreNumerica::inserir(int no, int valor, int indiceFilme) {
-    if (no < 0) {
-        No novo;
-        novo.valor = valor;
-        novo.filmes.push_back(indiceFilme);
-        novo.esquerda = -1;
-        novo.direita = -1;
-        novo.altura = 1;
-        nos.push_back(novo);
-        return static_cast<int>(nos.size()) - 1;
-    }
-
-    if (valor == nos[no].valor) {
-        nos[no].filmes.push_back(indiceFilme);
-        return no;
-    }
-
-    if (valor < nos[no].valor) {
-        int novaEsquerda = inserir(nos[no].esquerda, valor, indiceFilme);
-        nos[no].esquerda = novaEsquerda;
-    } else {
-        int novaDireita = inserir(nos[no].direita, valor, indiceFilme);
-        nos[no].direita = novaDireita;
-    }
-
-    atualizarAltura(no);
-    int diferenca = alturaDe(nos[no].esquerda) - alturaDe(nos[no].direita);
-
-    if (diferenca > 1) {
-        int esquerda = nos[no].esquerda;
-        if (alturaDe(nos[esquerda].esquerda) < alturaDe(nos[esquerda].direita)) {
-            nos[no].esquerda = girarEsquerda(esquerda);
+void ArvoreNumerica::montar() {
+    nos.clear();
+    for (size_t valor = 0; valor < filmesPorValor.size(); valor++) {
+        if (!filmesPorValor[valor].empty()) {
+            No novo;
+            novo.valor = static_cast<int>(valor);
+            novo.esquerda = -1;
+            novo.direita = -1;
+            nos.push_back(novo);
         }
-        return girarDireita(no);
     }
-    if (diferenca < -1) {
-        int direita = nos[no].direita;
-        if (alturaDe(nos[direita].direita) < alturaDe(nos[direita].esquerda)) {
-            nos[no].direita = girarDireita(direita);
-        }
-        return girarEsquerda(no);
-    }
-    return no;
+    raiz = ligar(0, static_cast<int>(nos.size()) - 1);
 }
 
-void ArvoreNumerica::adicionar(int valor, int indiceFilme) {
-    raiz = inserir(raiz, valor, indiceFilme);
+/**
+ * Liga as entradas de `nos[inicio..fim]` (já em ordem) numa árvore e devolve a posição do topo.
+ *
+ * O do meio vira o topo. A metade de baixo é ligada do mesmo jeito e vira o
+ * lado esquerdo; a metade de cima vira o lado direito. Exemplo com 7 números:
+ *
+ *   posições:  0   1   2  [3]  4   5   6      → o 3 é o topo
+ *   esquerda:  0  [1]  2                      → o 1 é o filho esquerdo do 3
+ *   direita:                   4  [5]  6      → o 5 é o filho direito do 3
+ *
+ * Quando `inicio` passa de `fim`, o pedaço está vazio e não há nó (`-1`).
+ */
+int ArvoreNumerica::ligar(int inicio, int fim) {
+    if (inicio > fim) {
+        return -1;
+    }
+    int meio = (inicio + fim) / 2;
+    nos[meio].esquerda = ligar(inicio, meio - 1);
+    nos[meio].direita = ligar(meio + 1, fim);
+    return meio;
+}
+
+/**
+ * Altura de uma entrada: 1 (ela mesma) mais a altura do lado mais alto.
+ * Posição `-1` (sem nó) conta como 0.
+ */
+int ArvoreNumerica::alturaDe(int no) const {
+    if (no < 0) {
+        return 0;
+    }
+    int alturaEsquerda = alturaDe(nos[no].esquerda);
+    int alturaDireita = alturaDe(nos[no].direita);
+    // ternário: condicao ? valor_se_verdadeiro : valor_se_falso. Pega o lado mais alto.
+    return 1 + (alturaEsquerda > alturaDireita ? alturaEsquerda : alturaDireita);
 }
 
 /**
@@ -124,7 +82,7 @@ void ArvoreNumerica::adicionar(int valor, int indiceFilme) {
  *  - só desce para a esquerda se o número atual é MAIOR que `minimo`
  *    (se for igual ou menor, tudo à esquerda é pequeno demais);
  *  - só desce para a direita se o número atual é MENOR que `maximo`.
- * Os números que caem dentro do intervalo têm a lista de filmes copiada para o resultado.
+ * Os números que caem dentro do intervalo têm o balde de filmes copiado para o resultado.
  */
 void ArvoreNumerica::coletar(int no, int minimo, int maximo, std::vector<int>& resultado) const {
     if (no < 0) {
@@ -135,7 +93,8 @@ void ArvoreNumerica::coletar(int no, int minimo, int maximo, std::vector<int>& r
         coletar(atual.esquerda, minimo, maximo, resultado);
     }
     if (atual.valor >= minimo && atual.valor <= maximo) {
-        resultado.insert(resultado.end(), atual.filmes.begin(), atual.filmes.end());
+        const std::vector<int>& filmes = filmesPorValor[atual.valor];
+        resultado.insert(resultado.end(), filmes.begin(), filmes.end());
     }
     if (atual.valor < maximo) {
         coletar(atual.direita, minimo, maximo, resultado);

@@ -69,12 +69,12 @@ private:
  *
  * @param a Primeira lista de posições.
  * @param b Segunda lista de posições.
- * @return Posições presentes em `a` e em `b`, na ordem de `a`.
+ * @return Posições presentes em `a` e em `b`, em ordem crescente.
  *
- * @note Velocidade: para cada item de `a`, procura em `b` inteira. Com listas
- *       grandes (ex: 474 mil episódios de TV) isso fica lento. Como as listas
- *       já saem do índice em ordem crescente, dá para fazer isso bem mais
- *       rápido andando nas duas listas ao mesmo tempo.
+ * @warning As duas listas precisam estar em ordem crescente. As listas do
+ *          índice já saem assim, e o resultado de intersecao() e uniao() também.
+ * @note Velocidade: anda nas duas listas ao mesmo tempo, olhando cada posição
+ *       uma vez só: no máximo |a| + |b| passos.
  */
 std::vector<int> intersecao(const std::vector<int>& a, const std::vector<int>& b);
 
@@ -86,10 +86,10 @@ std::vector<int> intersecao(const std::vector<int>& a, const std::vector<int>& b
  *
  * @param a Primeira lista de posições.
  * @param b Segunda lista de posições.
- * @return Tudo de `a`, seguido dos itens de `b` que não estavam em `a`.
+ * @return Posições de `a` e de `b`, sem repetir, em ordem crescente.
  *
- * @note O resultado pode sair fora de ordem crescente. Exemplo: `a = {5}` e `b = {2}` devolve `{5, 2}`.
- * @note Velocidade: mesmo problema da intersecao(). Cada item de `b` é procurado em `a` inteira.
+ * @warning As duas listas precisam estar em ordem crescente (veja intersecao()).
+ * @note Velocidade: no máximo |a| + |b| passos, como na intersecao().
  */
 std::vector<int> uniao(const std::vector<int>& a, const std::vector<int>& b);
 

@@ -39,43 +39,64 @@ std::vector<int> IndiceCategoria::buscar(const std::string& chave) const {
 }
 
 /**
- * Como funciona: para cada posição de `a`, procura a mesma posição em `b`.
- * Se achar, ela entra no resultado. O `break` para a procura assim que acha,
- * porque não precisa continuar olhando o resto de `b`.
+ * Como funciona: as duas listas estão em ordem crescente, então dá para andar
+ * nas duas ao mesmo tempo, com um marcador em cada (`i` em `a`, `j` em `b`):
+ *  - valores iguais: o filme está nas duas listas. Entra no resultado e os dois marcadores andam;
+ *  - `a[i]` menor: como `b` só cresce daqui para frente, `a[i]` nunca vai aparecer em `b`. Só `i` anda;
+ *  - `b[j]` menor: o mesmo raciocínio, só `j` anda.
+ * Termina quando uma das listas acaba: o que sobrou na outra não pode estar nas duas.
+ * Cada posição é olhada uma vez só.
  */
 std::vector<int> intersecao(const std::vector<int>& a, const std::vector<int>& b) {
     std::vector<int> resultado;
-    for (int x : a) {
-        for (int y : b) {
-            if (x == y) {
-                resultado.push_back(x);
-                break;
-            }
+    size_t i = 0;
+    size_t j = 0;
+    while (i < a.size() && j < b.size()) {
+        if (a[i] == b[j]) {
+            resultado.push_back(a[i]);
+            i++;
+            j++;
+        } else if (a[i] < b[j]) {
+            i++;
+        } else {
+            j++;
         }
     }
     return resultado;
 }
 
 /**
- * Como funciona:
- *  1. Começa o resultado com tudo que está em `a`.
- *  2. Para cada posição de `b`, verifica se ela já estava em `a`.
- *  3. Se não estava, adiciona no fim do resultado.
- * Assim nenhuma posição aparece repetida.
+ * Como funciona: anda nas duas listas ao mesmo tempo e, a cada passo, coloca
+ * no resultado o MENOR dos dois valores da vez:
+ *  - valores iguais: entra uma vez só e os dois marcadores andam (assim nada se repete);
+ *  - senão, entra o menor e só o marcador dele anda.
+ * Quando uma lista acaba, o resto da outra entra inteiro (já está em ordem).
+ * O resultado continua em ordem crescente, o que permite combinar um terceiro filtro.
  */
 std::vector<int> uniao(const std::vector<int>& a, const std::vector<int>& b) {
-    std::vector<int> resultado = a;
-    for (int y : b) {
-        bool existe = false;
-        for (int x : a) {
-            if (x == y) {
-                existe = true;
-                break;
-            }
+    std::vector<int> resultado;
+    size_t i = 0;
+    size_t j = 0;
+    while (i < a.size() && j < b.size()) {
+        if (a[i] == b[j]) {
+            resultado.push_back(a[i]);
+            i++;
+            j++;
+        } else if (a[i] < b[j]) {
+            resultado.push_back(a[i]);
+            i++;
+        } else {
+            resultado.push_back(b[j]);
+            j++;
         }
-        if (!existe) {
-            resultado.push_back(y);
-        }
+    }
+    while (i < a.size()) {
+        resultado.push_back(a[i]);
+        i++;
+    }
+    while (j < b.size()) {
+        resultado.push_back(b[j]);
+        j++;
     }
     return resultado;
 }
