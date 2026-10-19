@@ -1,23 +1,3 @@
-/**
- * @file benchmark.cpp
- * @brief Mede o tempo de cada parte do programa e das alternativas que não usamos, com os mesmos dados.
- *
- * Como rodar (de dentro da pasta modulo1):
- *
- *     g++ -O2 -std=c++17 -static tests/benchmark/benchmark.cpp tests/benchmark/arvore_avl.cpp \
- *         src/arvore.cpp src/carregador.cpp src/indice.cpp src/cache.cpp src/texto.cpp -o build/benchmark.exe
- *     ./build/benchmark.exe > tests/logs/benchmark.tsv
- *
- * Como cada número é obtido (função medir()):
- *  1. Anota a hora antes, com std::chrono::steady_clock (um cronômetro que só anda para frente).
- *  2. Roda a mesma operação várias vezes seguidas.
- *  3. Anota a hora depois e divide o tempo total pelo número de repetições.
- * Repetir e tirar a média diminui o efeito de outras coisas que o computador faz ao mesmo tempo.
- * Operações muito lentas (segundos) rodam uma vez só.
- *
- * Saída: uma medida por linha, separada por tabulação: grupo, nome, valores.
- */
-
 #include <chrono>
 #include <iostream>
 #include <string>
@@ -32,12 +12,10 @@
 
 using Relogio = std::chrono::steady_clock;
 
-/// Milissegundos desde `inicio`.
 static double milissegundosDesde(Relogio::time_point inicio) {
     return std::chrono::duration<double, std::milli>(Relogio::now() - inicio).count();
 }
 
-/// Roda `operacao` `repeticoes` vezes e devolve o tempo médio de uma vez, em milissegundos.
 template <typename Operacao>
 static double medir(Operacao operacao, int repeticoes) {
     auto inicio = Relogio::now();
@@ -51,7 +29,6 @@ int main() {
     int filmesIgnorados = 0;
     int cinemasIgnorados = 0;
 
-    // ---- 1. Carregamento, fase por fase (cada fase uma vez, como no programa)
     auto inicio = Relogio::now();
     std::vector<Filme> filmes = carregarFilmes("dados/filmesCrop.txt", filmesIgnorados);
     double tempoFilmes = milissegundosDesde(inicio);
@@ -95,7 +72,6 @@ int main() {
     std::cout << "carregamento\tarvores baldes\t" << tempoBaldes << "\n";
     std::cout << "carregamento\tarvores montar\t" << tempoMontar << "\n";
 
-    // ---- 2. Montar a estrutura de ano e duração: atual x AVL x merge sort (média de 5)
     double tempoAtual = medir([&] {
         ArvoreNumerica ano;
         ArvoreNumerica duracao;
@@ -130,7 +106,6 @@ int main() {
     std::cout << "montar arvore\tAVL\t" << tempoAvl << "\n";
     std::cout << "montar arvore\tmerge sort\t" << tempoMergeSort << "\n";
 
-    // ---- 3. Ligar cinema -> filme: busca binária (atual, média de 20) x busca linear (1 vez)
     double tempoBinaria = medir([&] { resolverFilmesDosCinemas(cinemas, filmes); }, 20);
     long long comparacoesLinear = 0;
     double tempoLinear = medir([&] {
@@ -143,7 +118,6 @@ int main() {
     std::cout << "ligar cinema-filme\tbusca binaria\t" << tempoBinaria << "\n";
     std::cout << "ligar cinema-filme\tbusca linear\t" << tempoLinear << "\t" << comparacoesLinear << " comparacoes\n";
 
-    // ---- 4. Busca por intervalo: árvore (média de 50) x sequencial (média de 10)
     struct Intervalo { const char* nome; bool porAno; int minimo; int maximo; };
     std::vector<Intervalo> intervalos = {
         {"ano 2000", true, 2000, 2000}, {"duracao 90..120", false, 90, 120}, {"anos 1990..1999", true, 1990, 1999},
@@ -156,7 +130,6 @@ int main() {
         std::cout << "intervalo\t" << caso.nome << "\t" << tempoArvore << "\t" << tempoSequencial << "\t" << encontrados << " filmes\n";
     }
 
-    // ---- 5. Tipo E / OU gênero: atual x versão anterior x varrer a base
     struct Combinacao { const char* nome; std::string primeiro; bool primeiroTipo; std::string segundo; bool ou; };
     std::vector<Combinacao> combinacoes = {
         {"short E Animation", "short", true, "Animation", false}, {"movie E Comedy", "movie", true, "Comedy", false},
@@ -172,7 +145,6 @@ int main() {
                   << "\t" << encontrados << " filmes\n";
     }
 
-    // ---- 6. Cache: resultado grande vindo do cache (média de 50)
     CacheConsultas cache;
     std::vector<int> grande = intersecao(indiceTipo.buscar("tvEpisode"), indiceGenero.buscar("Drama"));
     cache.adicionar("filme|E|tipo=tvEpisode|genero=Drama", grande);
@@ -180,7 +152,6 @@ int main() {
     double tempoCache = medir([&] { cache.buscar("filme|E|tipo=tvEpisode|genero=Drama", copia); }, 50);
     std::cout << "cache\ttvEpisode E Drama do cache\t" << tempoCache << "\t" << grande.size() << " filmes\n";
 
-    // ---- 7. Cinemas que exibem: mesmo código de cinemasQueExibem() (main.cpp), com os 559 mil filmes de 1885..2026
     std::vector<int> todosComAno = arvoreAno.buscarIntervalo(1885, 2026);
     size_t cinemasAchados = 0;
     double tempoMarcacao = medir([&] {
@@ -200,7 +171,6 @@ int main() {
     }, 20);
     std::cout << "cinemas\tmarcacao com 559 mil filmes\t" << tempoMarcacao << "\t" << cinemasAchados << " cinemas\n";
 
-    // ---- 8. Nós visitados: a mesma árvore e o mesmo percurso de coletar(), contando os nós em vez de copiar filmes
     for (const Intervalo& caso : intervalos) {
         ArvoreContada arvore(filmes, caso.porAno);
         std::cout << "nos visitados\t" << caso.nome << "\t" << arvore.contarVisitas(caso.minimo, caso.maximo)

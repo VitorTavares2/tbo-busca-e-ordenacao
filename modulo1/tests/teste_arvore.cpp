@@ -1,11 +1,3 @@
-/**
- * @file teste_arvore.cpp
- * @brief Testes da ArvoreNumerica (arvore.h). Cada teste mostra uma regra que a árvore precisa cumprir.
- *
- * Como rodar: `bash tests/rodar_testes.sh` (ou veja o README).
- * Se algum teste falhar, o programa diz qual foi e termina com erro.
- */
-
 #include <cstdlib>
 #include <iostream>
 #include <string>

@@ -1,19 +1,4 @@
 #!/usr/bin/env bash
-# Roda todos os testes do Modulo 1 e 2 e grava o resultado em tests/logs/.
-#
-# Uso (dentro da pasta modulo1):   bash tests/rodar_testes.sh
-#
-# Etapas:
-#   1. Compila o programa e o teste da arvore.
-#   2. Testes da arvore (unitarios).
-#   3. Modulo 1 igual ao que era antes (comparacao com tests/golden).
-#   4. Tabela de casos (uma consulta por caso, resposta conferida com awk).
-#   5. Erros de digitacao e arquivos faltando.
-#   6. Casos em cascata (varias consultas na mesma sessao, uma dependendo da outra).
-#   7. Volume (centenas de consultas em uma sessao, com tempo de cada uma).
-#
-# O "esperado" de cada caso NAO vem do programa. Vem de contas feitas com awk
-# direto nos arquivos de dados. Assim, se o programa errar, o teste percebe.
 
 set +u
 cd "$(dirname "$0")/.."

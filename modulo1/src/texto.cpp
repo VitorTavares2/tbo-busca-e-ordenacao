@@ -1,15 +1,5 @@
-/**
- * @file texto.cpp
- * @brief Código das funções dividir() e aparar(). A explicação de uso está em texto.h.
- */
-
 #include "texto.h"
 
-/**
- * Como funciona: lê o texto letra por letra e junta as letras num pedaço.
- * Quando encontra o separador, guarda o pedaço e começa um novo.
- * No final, guarda também o último pedaço, que não termina em separador.
- */
 std::vector<std::string> dividir(const std::string& texto, char delimitador) {
     std::vector<std::string> partes;
     std::string atual;
@@ -25,14 +15,6 @@ std::vector<std::string> dividir(const std::string& texto, char delimitador) {
     return partes;
 }
 
-/**
- * Como funciona: anda do começo para frente e do fim para trás, pulando
- * espaços e quebras de linha. Depois pega só o trecho do meio.
- *
- * Por que isso importa: os arquivos foram salvos no Windows, onde cada linha
- * termina com dois caracteres invisíveis (`\r` e `\n`). A leitura de linha do
- * C++ remove só o `\n`. O `\r` que sobra é removido aqui.
- */
 std::string aparar(const std::string& texto) {
     size_t inicio = 0;
     size_t fim = texto.size();
@@ -45,14 +27,6 @@ std::string aparar(const std::string& texto) {
     return texto.substr(inicio, fim - inicio);
 }
 
-/**
- * Como funciona:
- *  1. Tira os espaços das pontas.
- *  2. Aceita um `-` no começo, se houver.
- *  3. Confere se o resto tem de 1 a 9 caracteres e se todos são dígitos.
- *  4. Monta o número dígito por dígito (cada dígito novo empurra os anteriores
- *     uma casa para a esquerda: 9, depois 90, depois 900...).
- */
 bool converterInteiro(const std::string& texto, int& valor) {
     const size_t MAXIMO_DE_DIGITOS = 9;
     std::string limpo = aparar(texto);

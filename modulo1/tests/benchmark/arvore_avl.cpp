@@ -1,40 +1,15 @@
-/**
- * @file arvore_avl.cpp
- * @brief Código da árvore de números. A explicação de uso está em arvore.h.
- */
-
 #include "arvore_avl.h"
 
-/**
- * Altura de uma entrada. Posição `-1` (sem nó) conta como 0.
- */
 int ArvoreAVL::alturaDe(int no) const {
     return no < 0 ? 0 : nos[no].altura;
 }
 
-/**
- * A altura de uma entrada é 1 (ela mesma) mais a altura do lado mais alto.
- */
 void ArvoreAVL::atualizarAltura(int no) {
     int alturaEsquerda = alturaDe(nos[no].esquerda);
     int alturaDireita = alturaDe(nos[no].direita);
     nos[no].altura = 1 + (alturaEsquerda > alturaDireita ? alturaEsquerda : alturaDireita);
 }
 
-/**
- * Usada quando o lado ESQUERDO ficou alto demais. O filho da esquerda sobe e o
- * nó atual desce para a direita dele.
- *
- *        no                filho
- *       /  \              /     \
- *    filho  C    ->      A      no
- *    /  \                      /  \
- *   A    B                    B    C
- *
- * Os números continuam em ordem: A < filho < B < no < C.
- *
- * @return A posição da entrada que agora fica no topo.
- */
 int ArvoreAVL::girarDireita(int no) {
     int filho = nos[no].esquerda;
     nos[no].esquerda = nos[filho].direita;
@@ -44,9 +19,6 @@ int ArvoreAVL::girarDireita(int no) {
     return filho;
 }
 
-/**
- * O espelho de girarDireita(). Usada quando o lado DIREITO ficou alto demais.
- */
 int ArvoreAVL::girarEsquerda(int no) {
     int filho = nos[no].direita;
     nos[no].direita = nos[filho].esquerda;
@@ -56,19 +28,6 @@ int ArvoreAVL::girarEsquerda(int no) {
     return filho;
 }
 
-/**
- * Como funciona:
- *  1. Se chegou num lugar vazio, cria a entrada nova aqui.
- *  2. Se o número é igual ao da entrada, só coloca o filme na lista dela.
- *  3. Se é menor, desce para a esquerda. Se é maior, desce para a direita.
- *  4. Na volta da descida, confere se um lado ficou 2 andares mais alto que o
- *     outro. Se ficou, gira para equilibrar. São 4 casos:
- *       - esquerda alta, e o filho da esquerda pesa para a esquerda: 1 giro.
- *       - esquerda alta, e o filho da esquerda pesa para a direita: 2 giros.
- *       - direita alta: os mesmos dois casos, espelhados.
- *
- * Quem chama guarda o valor devolvido, porque o topo pode mudar depois de um giro.
- */
 int ArvoreAVL::inserir(int no, int valor, int indiceFilme) {
     if (no < 0) {
         No novo;
@@ -118,14 +77,6 @@ void ArvoreAVL::adicionar(int valor, int indiceFilme) {
     raiz = inserir(raiz, valor, indiceFilme);
 }
 
-/**
- * Como funciona: visita a árvore da esquerda para a direita (números do menor
- * para o maior), mas só entra nos lados que podem ter algo dentro do intervalo:
- *  - só desce para a esquerda se o número atual é MAIOR que `minimo`
- *    (se for igual ou menor, tudo à esquerda é pequeno demais);
- *  - só desce para a direita se o número atual é MENOR que `maximo`.
- * Os números que caem dentro do intervalo têm a lista de filmes copiada para o resultado.
- */
 void ArvoreAVL::coletar(int no, int minimo, int maximo, std::vector<int>& resultado) const {
     if (no < 0) {
         return;

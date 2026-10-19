@@ -1,15 +1,3 @@
-/**
- * @file alternativas.h
- * @brief Soluções que consideramos e NÃO usamos no programa. Existem só para o benchmark comparar.
- *
- * Cada função aqui resolve o mesmo problema de uma função do programa, de outro jeito:
- *  - intersecaoAnterior() / uniaoAnterior(): versão do E / OU antes da correção (lista contra lista inteira);
- *  - ordenarComMergeSort(): ordenar (valor, posição) em vez de usar baldes;
- *  - buscaLinearPorCodigo(): achar um filme pelo código olhando um por um, em vez de busca binária;
- *  - buscaSequencialIntervalo(): achar filmes de um intervalo olhando os 584 mil, em vez da árvore;
- *  - varrerTipoEGenero(): responder "tipo E gênero" sem índice nenhum.
- */
-
 #ifndef ALTERNATIVAS_H
 #define ALTERNATIVAS_H
 
@@ -17,7 +5,6 @@
 #include <vector>
 #include "../../src/modelos.h"
 
-/// E antes da correção: para cada item de `a`, procura em `b` desde o começo.
 inline std::vector<int> intersecaoAnterior(const std::vector<int>& a, const std::vector<int>& b) {
     std::vector<int> resultado;
     for (int x : a) {
@@ -31,7 +18,6 @@ inline std::vector<int> intersecaoAnterior(const std::vector<int>& a, const std:
     return resultado;
 }
 
-/// OU antes da correção: copia `a` e procura cada item de `b` em `a` inteira.
 inline std::vector<int> uniaoAnterior(const std::vector<int>& a, const std::vector<int>& b) {
     std::vector<int> resultado = a;
     for (int y : b) {
@@ -49,13 +35,11 @@ inline std::vector<int> uniaoAnterior(const std::vector<int>& a, const std::vect
     return resultado;
 }
 
-/// Um filme com o número dele (ano ou duração), para ordenar.
 struct ValorPosicao {
     int valor;
     int posicao;
 };
 
-/// Merge sort feito à mão (o enunciado proíbe std::sort). Ordena por valor e é estável.
 inline void ordenarComMergeSort(std::vector<ValorPosicao>& lista, std::vector<ValorPosicao>& auxiliar, int inicio, int fim) {
     if (inicio >= fim) {
         return;
@@ -80,7 +64,6 @@ inline void ordenarComMergeSort(std::vector<ValorPosicao>& lista, std::vector<Va
     }
 }
 
-/// Acha a posição de um código olhando os filmes um por um. Conta as comparações feitas.
 inline int buscaLinearPorCodigo(const std::vector<Filme>& filmes, const std::string& codigo, long long& comparacoes) {
     for (size_t i = 0; i < filmes.size(); i++) {
         comparacoes++;
@@ -91,7 +74,6 @@ inline int buscaLinearPorCodigo(const std::vector<Filme>& filmes, const std::str
     return -1;
 }
 
-/// Acha os filmes com ano (ou duração) entre `minimo` e `maximo` olhando os 584 mil.
 inline std::vector<int> buscaSequencialIntervalo(const std::vector<Filme>& filmes, bool porAno, int minimo, int maximo) {
     std::vector<int> resultado;
     for (size_t i = 0; i < filmes.size(); i++) {
@@ -103,7 +85,6 @@ inline std::vector<int> buscaSequencialIntervalo(const std::vector<Filme>& filme
     return resultado;
 }
 
-/// Responde "tipo E gênero" olhando os 584 mil filmes, sem usar índice.
 inline std::vector<int> varrerTipoEGenero(const std::vector<Filme>& filmes, const std::string& tipo, const std::string& genero) {
     std::vector<int> resultado;
     for (size_t i = 0; i < filmes.size(); i++) {
@@ -120,10 +101,6 @@ inline std::vector<int> varrerTipoEGenero(const std::vector<Filme>& filmes, cons
     return resultado;
 }
 
-/**
- * Cópia da ArvoreNumerica (baldes + montar pelo meio + coletar) que, em vez de
- * copiar filmes, conta quantos nós a busca visita. Serve só para medir a poda.
- */
 class ArvoreContada {
 public:
     ArvoreContada(const std::vector<Filme>& filmes, bool porAno) {

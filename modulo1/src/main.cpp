@@ -1,19 +1,3 @@
-/**
- * @file main.cpp
- * @brief Ponto de entrada do programa: carrega os dados e mostra o menu de buscas no terminal.
- *
- * O que acontece quando o programa roda:
- *  1. Lê os arquivos de filmes e de cinemas (carregador.h).
- *  2. Monta os índices por tipo e por gênero (indice.h) e as árvores de ano e de duração (arvore.h).
- *  3. Mostra quanto tempo o carregamento levou.
- *  4. Mostra o menu e espera o usuário escolher uma busca.
- *  5. Em cada busca, mostra o resultado, se ele veio do cache e quanto tempo levou.
- *
- * Buscas disponíveis:
- *  - Módulo 1: filmes e cinemas por tipo e/ou gênero, combinados com E / OU.
- *  - Módulo 2: filmes por duração, filmes por ano e cinemas por ano de lançamento.
- */
-
 #include <cctype>
 #include <chrono>
 #include <iomanip>
@@ -26,36 +10,21 @@
 #include "cache.h"
 #include "entrada.h"
 
-/// Quantos itens aparecem na tela em cada busca. O total encontrado sempre aparece por inteiro.
 const size_t LIMITE_DE_LINHAS = 10;
 
-/// Maior número de filtros aceito em uma busca do Módulo 1.
 const int MAXIMO_DE_FILTROS = 10;
 
-/// Faixa de anos aceita na busca por ano.
 const int ANO_MINIMO = 0;
 const int ANO_MAXIMO = 9999;
 
-/// Faixa de duração (em minutos) aceita na busca por duração.
 const int DURACAO_MINIMA = 0;
 const int DURACAO_MAXIMA = 99999;
 
-/**
- * @brief Um filtro digitado pelo usuário.
- *
- * Exemplo: o usuário escolhe "T" e digita `movie`.
- * Isso vira tipoCampo = `tipo` e valor = `movie`.
- */
 struct Filtro {
-    std::string tipoCampo;  ///< Onde procurar: `tipo` ou `genero`.
-    std::string valor;      ///< O que procurar. Exemplo: `movie`, `Comedy`.
+    std::string tipoCampo;
+    std::string valor;
 };
 
-/**
- * @brief Devolve uma cópia do texto com todas as letras em maiúsculas.
- *
- * Exemplo: `"ou"` vira `"OU"`. Usado só para entender respostas como `t`, `T`, `ou`, `Ou`.
- */
 std::string paraMaiusculas(std::string texto) {
     for (char& letra : texto) {
         letra = static_cast<char>(std::toupper(static_cast<unsigned char>(letra)));
@@ -63,25 +32,10 @@ std::string paraMaiusculas(std::string texto) {
     return texto;
 }
 
-/**
- * @brief Quantos milissegundos se passaram desde o instante `inicio`.
- */
 double milissegundosDesde(std::chrono::steady_clock::time_point inicio) {
     return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - inicio).count();
 }
 
-/**
- * @brief Pergunta ao usuário quantos filtros ele quer e lê cada um.
- *
- * Para cada filtro, o usuário responde:
- *  - `T` para filtrar por tipo ou `G` para filtrar por gênero (maiúscula ou minúscula).
- *  - o valor procurado. Exemplo: `movie` ou `Comedy`.
- *
- * Respostas inválidas mostram `Erro:` e a pergunta é feita de novo.
- *
- * @param filtros Recebe os filtros digitados, na ordem em que foram digitados.
- * @return `true` se todos os filtros foram lidos. `false` se a entrada acabou no meio.
- */
 bool lerFiltros(std::vector<Filtro>& filtros) {
     int quantidade = 0;
     if (!lerInteiro("Quantos filtros? ", quantidade, 1, MAXIMO_DE_FILTROS)) {
@@ -118,16 +72,6 @@ bool lerFiltros(std::vector<Filtro>& filtros) {
     return true;
 }
 
-/**
- * @brief Pergunta se os filtros devem ser combinados com E ou com OU.
- *
- * Com um filtro só, não há nada a combinar. Nesse caso a pergunta não é feita
- * e o operador vira `E`.
- *
- * @param quantidadeFiltros Quantos filtros o usuário digitou.
- * @param operador          Recebe `E` ou `OU` (sempre em maiúsculas).
- * @return `true` se há um operador. `false` se a entrada acabou.
- */
 bool operadorEscolhido(int quantidadeFiltros, std::string& operador) {
     if (quantidadeFiltros <= 1) {
         operador = "E";
@@ -147,18 +91,6 @@ bool operadorEscolhido(int quantidadeFiltros, std::string& operador) {
     }
 }
 
-/**
- * @brief Monta o texto que descreve uma busca, usado como chave no cache.
- *
- * Exemplo: busca de filmes, operação E, filtros tipo=movie e genero=Comedy
- * gera `filme|E|tipo=movie|genero=Comedy`.
- *
- * @param filtros  Filtros digitados.
- * @param operador `E` ou `OU`.
- * @param alvo     `filme` ou `cinema`. Entra na chave para que uma busca de
- *                 filmes e uma de cinemas com os mesmos filtros não se misturem.
- * @return A chave montada.
- */
 std::string montarChaveCache(const std::vector<Filtro>& filtros, const std::string& operador, const std::string& alvo) {
     std::string chave = alvo + "|" + operador;
     for (const Filtro& filtro : filtros) {
@@ -167,38 +99,10 @@ std::string montarChaveCache(const std::vector<Filtro>& filtros, const std::stri
     return chave;
 }
 
-/**
- * @brief Monta a chave de cache de uma busca por intervalo numérico.
- *
- * Exemplo: filmes com ano entre 2000 e 2010 gera `filme|ano=2000..2010`.
- *
- * @param alvo    `filme` ou `cinema`.
- * @param campo   `ano` ou `duracao`.
- * @param minimo  Começo do intervalo.
- * @param maximo  Fim do intervalo.
- */
 std::string montarChaveIntervalo(const std::string& alvo, const std::string& campo, int minimo, int maximo) {
     return alvo + "|" + campo + "=" + std::to_string(minimo) + ".." + std::to_string(maximo);
 }
 
-/**
- * @brief Aplica todos os filtros e devolve as posições dos filmes que passam neles.
- *
- * Como funciona:
- *  1. Pega no índice a lista do primeiro filtro. Ela é o resultado inicial.
- *  2. Para cada filtro seguinte, pega a lista dele e junta com o resultado:
- *     - operador `OU`: usa uniao(), que soma as listas.
- *     - operador `E`: usa intersecao(), que fica só com o que está nas duas.
- *
- * Exemplo: filtros `tipo=movie` e `genero=Comedy` com `E` devolve
- * os filmes que são do tipo movie E do gênero Comedy.
- *
- * @param filtros      Filtros digitados.
- * @param operador     `E` ou `OU`.
- * @param indiceTipo   Índice por tipo.
- * @param indiceGenero Índice por gênero.
- * @return Posições dos filmes encontrados. Volta vazia se não houver filtros.
- */
 std::vector<int> aplicarFiltros(const std::vector<Filtro>& filtros, const std::string& operador,
                                  const IndiceCategoria& indiceTipo, const IndiceCategoria& indiceGenero) {
     std::vector<int> resultado;
@@ -217,27 +121,10 @@ std::vector<int> aplicarFiltros(const std::vector<Filtro>& filtros, const std::s
     return resultado;
 }
 
-/**
- * @brief Escreve um número, ou `?` quando o arquivo não trazia essa informação (valor `-1`).
- */
 std::string numeroOuInterrogacao(int numero) {
     return numero < 0 ? "?" : std::to_string(numero);
 }
 
-/**
- * @brief Mostra na tela o total de filmes encontrados e os 10 primeiros.
- *
- * Só 10 aparecem porque uma busca como `tipo=tvEpisode` encontra mais de
- * 470 mil filmes, e imprimir todos travaria o terminal. Quando há mais, uma
- * linha final diz quantos ficaram de fora.
- *
- * Cada linha mostra: título, tipo, ano e duração. Ano ou duração que o arquivo
- * não informa aparecem como `?`.
- *
- * @param indices Posições dos filmes encontrados.
- * @param filmes  Lista completa de filmes.
- * @param dica    Frase mostrada quando nada é encontrado, para ajudar o usuário a achar o erro.
- */
 void imprimirFilmes(const std::vector<int>& indices, const std::vector<Filme>& filmes, const std::string& dica) {
     std::cout << "Total encontrado: " << indices.size() << std::endl;
     if (indices.empty()) {
@@ -255,23 +142,6 @@ void imprimirFilmes(const std::vector<int>& indices, const std::vector<Filme>& f
     }
 }
 
-/**
- * @brief Descobre quais cinemas exibem pelo menos um dos filmes procurados.
- *
- * Como funciona:
- *  1. Cria uma lista de marcações com um espaço para cada filme (0 = não procurado).
- *  2. Marca com 1 cada filme procurado.
- *  3. Para cada cinema, olha a posição de cada filme que ele exibe
- *     (Cinema::filmePosicoes) e confere a marcação. Parou no primeiro que está marcado.
- *
- * Assim, o trabalho não cresce com a quantidade de filmes procurados: são uma
- * passada para marcar e uma passada pelos cinemas.
- *
- * @param indicesFilmes Posições dos filmes procurados.
- * @param totalFilmes   Quantos filmes existem no total.
- * @param cinemas       Lista completa de cinemas (com filmePosicoes já preenchido).
- * @return Posições dos cinemas encontrados, na ordem do arquivo.
- */
 std::vector<int> cinemasQueExibem(const std::vector<int>& indicesFilmes, size_t totalFilmes, const std::vector<Cinema>& cinemas) {
     std::vector<char> procurado(totalFilmes, 0);
     for (int indice : indicesFilmes) {
@@ -290,13 +160,6 @@ std::vector<int> cinemasQueExibem(const std::vector<int>& indicesFilmes, size_t 
     return encontrados;
 }
 
-/**
- * @brief Mostra o total de cinemas encontrados e os 10 primeiros, com o preço do ingresso.
- *
- * @param indices Posições dos cinemas encontrados.
- * @param cinemas Lista completa de cinemas.
- * @param dica    Frase mostrada quando nada é encontrado.
- */
 void imprimirCinemas(const std::vector<int>& indices, const std::vector<Cinema>& cinemas, const std::string& dica) {
     std::cout << "Total de cinemas encontrados: " << indices.size() << std::endl;
     if (indices.empty()) {
@@ -314,35 +177,12 @@ void imprimirCinemas(const std::vector<int>& indices, const std::vector<Cinema>&
     }
 }
 
-/**
- * @brief Mostra as duas últimas linhas de toda busca: se veio do cache e quanto tempo levou.
- *
- * @param veioDoCache `true` se o resultado já estava guardado de uma busca igual.
- * @param milissegundos Tempo da busca, sem contar o tempo de digitação.
- */
 void imprimirRodape(bool veioDoCache, double milissegundos) {
     std::cout << "Veio do cache: " << (veioDoCache ? "sim" : "nao") << std::endl;
     std::cout << "Tempo de busca: " << std::fixed << std::setprecision(3) << milissegundos << " ms" << std::endl;
     std::cout.unsetf(std::ios::fixed);
 }
 
-/**
- * @brief Opção 1 do menu: busca filmes por tipo e/ou gênero.
- *
- * Como funciona:
- *  1. Lê os filtros e o operador (E / OU).
- *  2. Monta a chave e procura no cache.
- *  3. Se não estava no cache, aplica os filtros e guarda o resultado no cache.
- *  4. Mostra o resultado, se veio do cache e o tempo gasto.
- *
- * O tempo medido começa DEPOIS que o usuário termina de digitar. Assim o
- * tempo de digitação não entra na conta.
- *
- * @param filmes       Lista completa de filmes.
- * @param indiceTipo   Índice por tipo.
- * @param indiceGenero Índice por gênero.
- * @param cache        Cache de buscas. É alterado quando a busca é nova.
- */
 void buscarFilmes(const std::vector<Filme>& filmes, const IndiceCategoria& indiceTipo,
                    const IndiceCategoria& indiceGenero, CacheConsultas& cache) {
     std::vector<Filtro> filtros;
@@ -367,23 +207,6 @@ void buscarFilmes(const std::vector<Filme>& filmes, const IndiceCategoria& indic
     imprimirRodape(veioDoCache, milissegundos);
 }
 
-/**
- * @brief Opção 2 do menu: busca cinemas que exibem filmes de um tipo e/ou gênero.
- *
- * Como funciona:
- *  1. Lê os filtros e acha os filmes que passam neles, do mesmo jeito da opção 1.
- *  2. Olha cada cinema e verifica se ele exibe pelo menos um desses filmes (cinemasQueExibem()).
- *  3. Mostra os cinemas encontrados, se veio do cache e o tempo gasto.
- *
- * O cache aqui guarda os FILMES encontrados, não os cinemas. Então, mesmo
- * quando a busca vem do cache, o passo 2 é refeito (ele é rápido).
- *
- * @param filmes       Lista completa de filmes.
- * @param cinemas      Lista completa de cinemas.
- * @param indiceTipo   Índice por tipo.
- * @param indiceGenero Índice por gênero.
- * @param cache        Cache de buscas. É alterado quando a busca é nova.
- */
 void buscarCinemas(const std::vector<Filme>& filmes, const std::vector<Cinema>& cinemas,
                     const IndiceCategoria& indiceTipo, const IndiceCategoria& indiceGenero, CacheConsultas& cache) {
     std::vector<Filtro> filtros;
@@ -410,21 +233,6 @@ void buscarCinemas(const std::vector<Filme>& filmes, const std::vector<Cinema>& 
     imprimirRodape(veioDoCache, milissegundos);
 }
 
-/**
- * @brief Pergunta o começo e o fim de um intervalo de números.
- *
- * O fim pode ficar em branco (só Enter). Nesse caso ele é igual ao começo,
- * o que serve para buscar um valor exato (ex: só o ano 2000).
- * Se o começo for maior que o fim, mostra `Erro:` e pergunta os dois de novo.
- *
- * @param perguntaMinimo Texto da pergunta do começo. Exemplo: `"Ano inicial: "`.
- * @param perguntaMaximo Texto da pergunta do fim.
- * @param limiteInferior Menor número aceito.
- * @param limiteSuperior Maior número aceito.
- * @param minimo         Recebe o começo do intervalo.
- * @param maximo         Recebe o fim do intervalo.
- * @return `true` se o intervalo foi lido. `false` se a entrada acabou.
- */
 bool lerIntervalo(const std::string& perguntaMinimo, const std::string& perguntaMaximo,
                   int limiteInferior, int limiteSuperior, int& minimo, int& maximo) {
     while (true) {
@@ -442,17 +250,6 @@ bool lerIntervalo(const std::string& perguntaMinimo, const std::string& pergunta
     }
 }
 
-/**
- * @brief Procura na árvore (com ajuda do cache) os filmes cujo número está no intervalo.
- *
- * @param arvore        Árvore do campo (ano ou duração).
- * @param chave         Chave de cache desta busca (veja montarChaveIntervalo()).
- * @param minimo        Começo do intervalo.
- * @param maximo        Fim do intervalo.
- * @param cache         Cache de buscas. É alterado quando a busca é nova.
- * @param veioDoCache   Recebe `true` se o resultado já estava guardado.
- * @return Posições dos filmes encontrados, do menor número para o maior.
- */
 std::vector<int> buscarIntervaloComCache(const ArvoreNumerica& arvore, const std::string& chave, int minimo, int maximo,
                                           CacheConsultas& cache, bool& veioDoCache) {
     std::vector<int> resultado;
@@ -464,16 +261,6 @@ std::vector<int> buscarIntervaloComCache(const ArvoreNumerica& arvore, const std
     return resultado;
 }
 
-/**
- * @brief Opção 3 do menu: busca filmes com duração entre dois valores (em minutos).
- *
- * Exemplo: mínimo 90 e máximo 120 devolve os filmes de 90 a 120 minutos, as duas pontas incluídas.
- * Filmes sem duração informada nunca aparecem aqui.
- *
- * @param filmes          Lista completa de filmes.
- * @param arvoreDuracao   Árvore de durações.
- * @param cache           Cache de buscas.
- */
 void buscarPorDuracao(const std::vector<Filme>& filmes, const ArvoreNumerica& arvoreDuracao, CacheConsultas& cache) {
     int minimo = 0;
     int maximo = 0;
@@ -492,16 +279,6 @@ void buscarPorDuracao(const std::vector<Filme>& filmes, const ArvoreNumerica& ar
     imprimirRodape(veioDoCache, milissegundos);
 }
 
-/**
- * @brief Opção 4 do menu: busca filmes lançados em um ano ou em um intervalo de anos.
- *
- * Para um ano só, digite o ano inicial e aperte Enter no ano final.
- * Filmes sem ano informado nunca aparecem aqui.
- *
- * @param filmes      Lista completa de filmes.
- * @param arvoreAno   Árvore de anos.
- * @param cache       Cache de buscas.
- */
 void buscarPorAno(const std::vector<Filme>& filmes, const ArvoreNumerica& arvoreAno, CacheConsultas& cache) {
     int minimo = 0;
     int maximo = 0;
@@ -519,17 +296,6 @@ void buscarPorAno(const std::vector<Filme>& filmes, const ArvoreNumerica& arvore
     imprimirRodape(veioDoCache, milissegundos);
 }
 
-/**
- * @brief Opção 5 do menu: busca cinemas que exibem algum filme lançado em um ano ou intervalo de anos.
- *
- * Como funciona: acha os filmes do período na árvore de anos e depois
- * confere quais cinemas exibem pelo menos um deles (cinemasQueExibem()).
- *
- * @param filmes      Lista completa de filmes.
- * @param cinemas     Lista completa de cinemas.
- * @param arvoreAno   Árvore de anos.
- * @param cache       Cache de buscas. Guarda os FILMES do período, como na opção 2.
- */
 void buscarCinemasPorAno(const std::vector<Filme>& filmes, const std::vector<Cinema>& cinemas,
                           const ArvoreNumerica& arvoreAno, CacheConsultas& cache) {
     int minimo = 0;
@@ -549,21 +315,6 @@ void buscarCinemasPorAno(const std::vector<Filme>& filmes, const std::vector<Cin
     imprimirRodape(veioDoCache, milissegundos);
 }
 
-/**
- * @brief Início do programa.
- *
- * Como funciona:
- *  1. Carrega filmes e cinemas da pasta `dados/`. Por isso o programa precisa
- *     ser executado de dentro da pasta `modulo1`. Se um arquivo não abrir,
- *     mostra `Erro:` dizendo qual e termina com código 1.
- *  2. Monta os índices: cada filme entra no índice do seu tipo e no índice de
- *     cada um dos seus gêneros. Um filme `Action,Short` entra em `Action` e em `Short`.
- *     Filmes com ano e/ou duração informados entram também nas árvores de ano e de duração.
- *  3. Mostra quantos registros foram carregados, avisos e o tempo gasto.
- *  4. Repete o menu até o usuário digitar `0` (ou a entrada acabar).
- *
- * @return 0 quando o programa termina normalmente. 1 se não conseguiu carregar os dados.
- */
 int main() {
     auto inicioCarregamento = std::chrono::steady_clock::now();
 
