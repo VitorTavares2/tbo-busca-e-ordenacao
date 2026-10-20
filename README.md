@@ -13,7 +13,7 @@ g++ -O2 -std=c++17 -static src\*.cpp -o busca.exe
 
 O programa lê `dados/filmesCrop.txt` e `dados/cinemas.txt`, então precisa ser executado de dentro de `modulo1`.
 
-## Apresentação
+## Documentação
 
-- [apresentacao/apresentacao.pdf](apresentacao/apresentacao.pdf)
-- [apresentacao/apresentacao.html](apresentacao/apresentacao.html):
+- [Relatório](documentacao/Relatorio.pdf)
+- [Apresentação](documentacao/Apresentacao.pdf)
