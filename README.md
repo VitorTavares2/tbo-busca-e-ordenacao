@@ -20,19 +20,6 @@ g++ -O2 -std=c++17 src/*.cpp -o busca
 
 O programa lê `dados/filmesCrop.txt` e `dados/cinemas.txt`, então precisa ser executado de dentro de `modulo1`.
 
-## Testes
-
-```bash
-bash tests/rodar_testes.sh
-```
-
-## Benchmark
-
-```bash
-g++ -O2 -std=c++17 -static tests/benchmark/*.cpp src/carregador.cpp src/indice.cpp src/arvore.cpp src/texto.cpp src/cache.cpp -o benchmark.exe
-./benchmark.exe
-```
-
 ## Apresentação
 
 - [apresentacao/apresentacao.pdf](apresentacao/apresentacao.pdf)
