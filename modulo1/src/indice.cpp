@@ -13,7 +13,7 @@ void IndiceCategoria::adicionar(const std::string& chave, int indiceFilme) {
 
 std::vector<int> IndiceCategoria::buscar(const std::string& chave) const {
     for (size_t i = 0; i < chaves.size(); i++) {
-        if (chaves[i] == chave) {
+        if (minusculas(chaves[i]) == minusculas(chave)) {
             return listas[i];
         }
     }

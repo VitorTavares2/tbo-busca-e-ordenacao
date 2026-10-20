@@ -1,4 +1,5 @@
 #include "texto.h"
+#include <cctype>
 
 std::vector<std::string> dividir(const std::string& texto, char delimitador) {
     std::vector<std::string> partes;
@@ -45,4 +46,11 @@ bool converterInteiro(const std::string& texto, int& valor) {
     }
     valor = negativo ? -resultado : resultado;
     return true;
+}
+
+std::string minusculas(std::string texto) {
+    for (char& letra : texto) {
+        letra = static_cast<char>(std::tolower(static_cast<unsigned char>(letra)));
+    }
+    return texto;
 }

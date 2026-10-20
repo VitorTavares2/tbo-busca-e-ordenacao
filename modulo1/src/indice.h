@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "texto.h"
 
 class IndiceCategoria {
 public:

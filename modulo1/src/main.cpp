@@ -94,7 +94,7 @@ bool operadorEscolhido(int quantidadeFiltros, std::string& operador) {
 std::string montarChaveCache(const std::vector<Filtro>& filtros, const std::string& operador, const std::string& alvo) {
     std::string chave = alvo + "|" + operador;
     for (const Filtro& filtro : filtros) {
-        chave += "|" + filtro.tipoCampo + "=" + filtro.valor;
+        chave += "|" + filtro.tipoCampo + "=" + minusculas(filtro.valor);
     }
     return chave;
 }
@@ -203,7 +203,7 @@ void buscarFilmes(const std::vector<Filme>& filmes, const IndiceCategoria& indic
 
     double milissegundos = milissegundosDesde(inicio);
 
-    imprimirFilmes(resultado, filmes, "Nenhum resultado. Dica: maiusculas e minusculas importam (use Comedy, nao comedy).");
+    imprimirFilmes(resultado, filmes, "Nenhum resultado. Dica: confira se o tipo ou genero existe (ex.: movie, Comedy).");
     imprimirRodape(veioDoCache, milissegundos);
 }
 
@@ -229,7 +229,7 @@ void buscarCinemas(const std::vector<Filme>& filmes, const std::vector<Cinema>& 
 
     double milissegundos = milissegundosDesde(inicio);
 
-    imprimirCinemas(cinemasEncontrados, cinemas, "Nenhum cinema exibe filmes com esses filtros. Dica: maiusculas e minusculas importam (use Comedy, nao comedy).");
+    imprimirCinemas(cinemasEncontrados, cinemas, "Nenhum cinema exibe filmes com esses filtros. Dica: confira se o tipo ou genero existe (ex.: movie, Comedy).");
     imprimirRodape(veioDoCache, milissegundos);
 }
 

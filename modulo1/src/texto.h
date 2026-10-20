@@ -10,4 +10,6 @@ std::string aparar(const std::string& texto);
 
 bool converterInteiro(const std::string& texto, int& valor);
 
+std::string minusculas(std::string texto);
+
 #endif
