@@ -1,0 +1,2069 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Buscador de Filmes · Apresentação</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      background: #0B0F14;
+      overflow: hidden;
+    }
+
+    #palco {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #trilho {
+      width: 1920px;
+      height: 1080px;
+      position: relative;
+      transform-origin: center center;
+      flex: none;
+    }
+
+    section {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .25s;
+    }
+
+    section.atual {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    section b {
+      font-weight: 700;
+    }
+
+    section>h2+:not([style*="position:absolute"]) {
+      margin-top: auto;
+    }
+
+    section>h2~:not([style*="position:absolute"]):last-child,
+    section>h2~:not([style*="position:absolute"]):has(+ [style*="position:absolute"]:last-child) {
+      margin-bottom: auto;
+    }
+
+    svg.linha {
+      position: absolute;
+      left: 0;
+      top: 0;
+      overflow: visible;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #DDE2E6;
+      vertical-align: top;
+    }
+
+    th {
+      font-weight: 600;
+    }
+
+    ol {
+      padding-left: 1.4em;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    #contador {
+      position: fixed;
+      right: 18px;
+      bottom: 12px;
+      font: 600 14px 'IBM Plex Mono', monospace;
+      color: #8EA2B6;
+      background: rgba(11, 15, 20, .7);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    @media print {
+      @page {
+        size: 1920px 1080px;
+        margin: 0;
+      }
+
+      html,
+      body {
+        height: auto;
+        overflow: visible;
+        background: none;
+      }
+
+      #palco {
+        position: static;
+        display: block;
+      }
+
+      #trilho {
+        transform: none !important;
+        height: auto;
+      }
+
+      section {
+        position: relative;
+        opacity: 1;
+        visibility: visible;
+        break-after: page;
+      }
+
+      #contador {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>  <div id="palco">
+    <div id="trilho">
+      <section id="cover" data-transition="fade"
+        style="background:#111A24;color:#E3EAF2;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+        <p
+          style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#5AA0F0">
+          Busca e Ordenação · Projeto 1</p>
+        <div style="display:flex;flex-direction:column;gap:32px">
+          <h1 style="font-size:120px;font-weight:700;line-height:1.05;color:#F2F5F8">Buscador de filmes e cinemas</h1>
+          <p style="font-size:40px;line-height:1.35;color:#AAB8C7">Índices, árvore e buscas medidas em 584 mil filmes
+          </p>
+          <div style="display:flex;gap:20px">
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;font-weight:600;background:#2A78D6;color:#FFFFFF;padding:10px 22px;border-radius:8px">
+              Módulo 1 · tipo e gênero</p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;font-weight:600;background:#0D8A6A;color:#FFFFFF;padding:10px 22px;border-radius:8px">
+              Módulo 2 · ano e duração</p>
+          </div>
+        </div>
+        <p style="font-size:30px;color:#AAB8C7">Prof. Tadeu Zubaran · Vitor Tavares Simões, Michael Douglas Teixeira
+          Barbosa · 20/10/2026</p>
+      </section>
+      <section id="problema" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:36px">
+        <h2 style="font-size:60px;font-weight:700;line-height:1.1">Responder buscas em 584 mil filmes sem olhar todos
+          eles</h2>
+        <div style="display:flex;gap:32px">
+          <div
+            style="flex:1;display:flex;flex-direction:column;gap:10px;background:#FFFFFF;border:1px solid #DDE2E6;border-radius:16px;padding:36px">
+            <p style="font-size:88px;font-weight:700;line-height:1.1">584.121</p>
+            <p style="font-size:30px;font-weight:600">filmes</p>
+            <p style="font-size:26px;color:#4A5563">48 MB de texto, uma linha por filme, colunas no estilo IMDb</p>
+          </div>
+          <div
+            style="flex:1;display:flex;flex-direction:column;gap:10px;background:#FFFFFF;border:1px solid #DDE2E6;border-radius:16px;padding:36px">
+            <p style="font-size:88px;font-weight:700;line-height:1.1">400</p>
+            <p style="font-size:30px;font-weight:600">cinemas</p>
+            <p style="font-size:26px;color:#4A5563">cada um com sua lista de filmes em cartaz: 2.009 no total</p>
+          </div>
+          <div
+            style="flex:1;display:flex;flex-direction:column;gap:10px;background:#FFFFFF;border:1px solid #DDE2E6;border-radius:16px;padding:36px">
+            <p style="font-size:88px;font-weight:700;line-height:1.1">5</p>
+            <p style="font-size:30px;font-weight:600">tipos de busca</p>
+            <p style="font-size:26px;color:#4A5563">tipo e gênero com E / OU, duração, ano e cinemas</p>
+          </div>
+        </div>
+        <p
+          style="font-size:34px;line-height:1.4;background:#E9F1FB;border-left:6px solid #2A78D6;padding:28px 36px;border-radius:8px">
+          O enunciado aceita um carregamento demorado, desde que a consulta seja rápida. Por isso o programa <b>prepara
+            tudo ao abrir</b> e cada busca só usa o que já está pronto.</p>
+        <p
+          style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#5B6774">
+          Busca e Ordenação · Projeto 1</p>
+      </section>
+      <section id="estrategia" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:36px">
+        <h2 style="font-size:60px;font-weight:700;line-height:1.1">Preparar uma vez, responder muitas</h2>
+        <div style="display:flex;gap:28px;align-items:center">
+          <div
+            style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFFFF;border:1px solid #DDE2E6;border-radius:16px;padding:36px">
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:2px;color:#4A5563">
+              PREPARAR · UMA VEZ</p>
+            <p style="font-size:104px;font-weight:700;line-height:1.1">0,75 s</p>
+            <p style="font-size:28px;color:#4A5563">ler os dois arquivos e montar índices e árvores, ao abrir o programa
+            </p>
+          </div>
+          <svg width="96" height="48" style="flex:none">
+            <polygon points="0.0,15.4 55.7,15.4 55.7,0.0 96.0,24.0 55.7,48.0 55.7,32.6 0.0,32.6" fill="#2A78D6" />
+          </svg>
+          <div
+            style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFFFF;border:1px solid #DDE2E6;border-radius:16px;padding:36px">
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:2px;color:#4A5563">
+              RESPONDER · CADA BUSCA</p>
+            <p style="font-size:104px;font-weight:700;line-height:1.1">0,03 ms</p>
+            <p style="font-size:28px;color:#4A5563">média de 703 buscas, usando só o que foi preparado</p>
+          </div>
+        </div>
+        <div
+          style="display:flex;flex-direction:column;gap:20px;background:#111A24;border-radius:20px;padding:36px 40px">
+          <p style="font-size:32px;line-height:1.4;color:#E3EAF2"><b>Ideia central:</b> cada filme existe uma vez só na
+            memória. Índices e árvores guardam apenas a <span style="color:#FFD479">posição</span> dele no vetor, um
+            número inteiro.</p>
+          <div style="display:flex;gap:10px;align-items:center">
+            <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;color:#8EA2B6">filmes =</p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;background:#1B2838;color:#E3EAF2;border:1px solid #34475C;padding:6px 16px;border-radius:6px">
+              [0] The Battle II</p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;background:#1B2838;color:#E3EAF2;border:1px solid #34475C;padding:6px 16px;border-radius:6px">
+              [1] Miguel jura…</p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;background:#1B2838;color:#E3EAF2;border:1px solid #34475C;padding:6px 16px;border-radius:6px">
+              [2] El amor…</p>
+            <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;color:#8EA2B6">…</p>
+            <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;color:#5AA0F0">índice "short"
+              = [0, 3]</p>
+          </div>
+        </div>
+        <p
+          style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#5B6774">
+          Busca e Ordenação · Projeto 1</p>
+      </section>
+      <section id="arquitetura" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 112px 150px;display:flex;flex-direction:column;gap:24px">
+        <h2 style="font-size:52px;font-weight:700;line-height:1.1">Como o código está organizado</h2>
+        <div style="display:flex;gap:36px;align-items:start">
+          <div style="flex:11">
+            <table style="font-size:24px;color:#111A23">
+              <tr>
+                <th style="width:30%;color:#5B6774">Arquivo</th>
+                <th style="width:70%;color:#5B6774">Responsabilidade</th>
+              </tr>
+              <tr>
+                <td><b>modelos.h</b></td>
+                <td>struct Filme e struct Cinema</td>
+              </tr>
+              <tr>
+                <td><b>texto.cpp</b></td>
+                <td>dividir(), aparar(), converterInteiro()</td>
+              </tr>
+              <tr>
+                <td><b>entrada.cpp</b></td>
+                <td>lerLinha(), lerInteiro(): entrada validada</td>
+              </tr>
+              <tr>
+                <td><b>carregador.cpp</b></td>
+                <td>lê os dois arquivos e liga cinema → filme</td>
+              </tr>
+              <tr style="background:#E9F1FB">
+                <td><b>indice.cpp</b></td>
+                <td>IndiceCategoria, intersecao(), uniao() · Módulo 1</td>
+              </tr>
+              <tr style="background:#E3F3EE">
+                <td><b>arvore.cpp</b></td>
+                <td>ArvoreNumerica: baldes, montar, coletar · Módulo 2</td>
+              </tr>
+              <tr>
+                <td><b>cache.cpp</b></td>
+                <td>CacheConsultas: chave → resultado</td>
+              </tr>
+              <tr>
+                <td><b>main.cpp</b></td>
+                <td>monta tudo, menu e as 5 buscas</td>
+              </tr>
+            </table>
+          </div>
+          <div
+            style="flex:9;display:flex;flex-direction:column;gap:12px;background:#111A24;border-radius:16px;padding:28px 32px">
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;color:#5AA0F0">
+              main(), na ordem em que roda</p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.45;color:#E3EAF2">
+              <span style="color:#FFD479">1</span> carregarFilmes() → vector&lt;Filme&gt;
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.45;color:#E3EAF2">
+              <span style="color:#FFD479">2</span> carregarCinemas() → vector&lt;Cinema&gt;
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.45;color:#E3EAF2">
+              <span style="color:#FFD479">3</span> resolverFilmesDosCinemas()
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.45;color:#E3EAF2">
+              <span style="color:#FFD479">4</span> laço: 2 índices + 2 árvores
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.45;color:#E3EAF2">
+              <span style="color:#FFD479">5</span> arvoreAno / arvoreDuracao.montar()
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.45;color:#E3EAF2">
+              <span style="color:#FFD479">6</span> menu → uma das 5 buscas
+            </p>
+          </div>
+        </div>
+      </section>
+      <section id="carregar" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 112px 150px;display:flex;flex-direction:column;gap:24px">
+        <h2 style="font-size:52px;font-weight:700;line-height:1.1">Uma linha do arquivo vira um Filme</h2>
+        <div style="display:flex;flex-direction:column;background:#111A24;border-radius:16px;padding:0px 0px 16px 0px">
+          <p
+            style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;background:#0C141C;padding:10px 24px;border-radius:16px 16px 0px 0px">
+            <b>src/carregador.cpp</b> · carregarFilmes() · trechos das linhas 17–50
+          </p>
+          <div style="display:flex;flex-direction:column;padding:10px 0px 0px 0px">
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+              <span style="color:#FFD479">17</span>&#160;&#160;<span style="color:#8FB8FF">while</span> (std::<span
+                style="color:#FFD479">getline</span>(arquivo, linha)) {
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">22</span>&#160;&#160;&#160;&#160;&#160;&#160;std::vector&lt;std::string&gt;
+              campos = <span style="color:#FFD479">dividir</span>(linha, <span style="color:#F2C48D">'\t'</span>);
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">23</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                style="color:#8FB8FF">if</span> (campos.<span style="color:#FFD479">size</span>() &lt; <span
+                style="color:#F5A3C7">9</span>) {
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span
+                style="color:#6F8396">24</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;linhasIgnoradas++;
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">25</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                style="color:#8FB8FF">continue</span>;
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">26</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+              <span style="color:#FFD479">27</span>&#160;&#160;&#160;&#160;&#160;&#160;campos[<span
+                style="color:#F5A3C7">8</span>] = <span style="color:#FFD479">aparar</span>(campos[<span
+                style="color:#F5A3C7">8</span>]);
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#6F8396;padding:0px 24px">
+              <i>&#160;⋮&#160;&#160;&#160;&#160;copia id, tipo e título · ano e duração começam em -1</i>
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+              <span style="color:#FFD479">36</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                style="color:#8FB8FF">bool</span> anoValido = (campos[<span style="color:#F5A3C7">5</span>] == <span
+                style="color:#F2C48D">"\\N"</span>) || <span style="color:#FFD479">converterInteiro</span>(campos[<span
+                style="color:#F5A3C7">5</span>], filme.ano);
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+              <span style="color:#FFD479">37</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                style="color:#8FB8FF">bool</span> duracaoValida = (campos[<span style="color:#F5A3C7">7</span>] == <span
+                style="color:#F2C48D">"\\N"</span>) || <span style="color:#FFD479">converterInteiro</span>(campos[<span
+                style="color:#F5A3C7">7</span>], filme.duracao);
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#6F8396;padding:0px 24px">
+              <i>&#160;⋮&#160;&#160;&#160;&#160;linha inválida é pulada · gêneros divididos pela vírgula</i>
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+              <span style="color:#FFD479">50</span>&#160;&#160;&#160;&#160;&#160;&#160;filmes.<span
+                style="color:#FFD479">push_back</span>(filme);
+            </p>
+          </div>
+        </div>
+        <div style="display:flex;gap:20px">
+          <div style="flex:1;background:#FFFFFF;border:1px solid #DDE2E6;border-radius:12px;padding:16px 20px">
+            <p style="font-size:24px;line-height:1.35;color:#3E4955"><span style="color:#1A56A0"><b>L17</b></span> uma
+              linha por vez: memória de uma linha, não dos 48 MB</p>
+          </div>
+          <div style="flex:1;background:#FFFFFF;border:1px solid #DDE2E6;border-radius:12px;padding:16px 20px">
+            <p style="font-size:24px;line-height:1.35;color:#3E4955"><span style="color:#1A56A0"><b>L36–37</b></span> \N
+              vira −1; texto que não é número pula a linha</p>
+          </div>
+          <div style="flex:1;background:#FFFFFF;border:1px solid #DDE2E6;border-radius:12px;padding:16px 20px">
+            <p style="font-size:24px;line-height:1.35;color:#3E4955"><span style="color:#1A56A0"><b>L50</b></span> a
+              posição no vetor vira o “id” de todas as estruturas</p>
+          </div>
+        </div>
+      </section>
+      <section id="montagem" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 112px 150px;display:flex;flex-direction:column;gap:24px">
+        <h2 style="font-size:52px;font-weight:700;line-height:1.1">Um único laço monta os índices e as árvores</h2>
+        <div style="display:flex;gap:36px;align-items:start">
+          <div
+            style="flex:3;display:flex;flex-direction:column;background:#111A24;border-radius:16px;padding:0px 0px 16px 0px">
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;background:#0C141C;padding:10px 24px;border-radius:16px 16px 0px 0px">
+              <b>src/main.cpp</b> · main() · linhas 339–353
+            </p>
+            <div style="display:flex;flex-direction:column;padding:10px 0px 0px 0px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">339</span>&#160;&#160;<span style="color:#8FB8FF">for</span> (size_t i =
+                <span style="color:#F5A3C7">0</span>; i &lt; filmes.<span style="color:#FFD479">size</span>(); i++) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">340</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">int</span> posicao = <span style="color:#8FB8FF">static_cast</span>&lt;<span
+                  style="color:#8FB8FF">int</span>&gt;(i);
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#1C2A40">
+                <span style="color:#5AA0F0">341</span>&#160;&#160;&#160;&#160;&#160;&#160;indiceTipo.<span
+                  style="color:#FFD479">adicionar</span>(filmes[i].tipo, posicao);
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#1C2A40">
+                <span style="color:#5AA0F0">342</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">for</span> (<span style="color:#8FB8FF">const</span> std::string&amp; genero :
+                filmes[i].generos) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#1C2A40">
+                <span
+                  style="color:#5AA0F0">343</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;indiceGenero.<span
+                  style="color:#FFD479">adicionar</span>(genero, posicao);
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#1C2A40">
+                <span style="color:#5AA0F0">344</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#16302A">
+                <span style="color:#4FC3A1">345</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">if</span> (filmes[i].ano &gt;= <span style="color:#F5A3C7">0</span>) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#16302A">
+                <span
+                  style="color:#4FC3A1">346</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;arvoreAno.<span
+                  style="color:#FFD479">adicionar</span>(filmes[i].ano, posicao);
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#16302A">
+                <span style="color:#4FC3A1">347</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#16302A">
+                <span style="color:#4FC3A1">348</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">if</span> (filmes[i].duracao &gt;= <span style="color:#F5A3C7">0</span>) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#16302A">
+                <span
+                  style="color:#4FC3A1">349</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;arvoreDuracao.<span
+                  style="color:#FFD479">adicionar</span>(filmes[i].duracao, posicao);
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#16302A">
+                <span style="color:#4FC3A1">350</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">351</span>&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#16302A">
+                <span style="color:#4FC3A1">352</span>&#160;&#160;arvoreAno.<span style="color:#FFD479">montar</span>();
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#16302A">
+                <span style="color:#4FC3A1">353</span>&#160;&#160;arvoreDuracao.<span
+                  style="color:#FFD479">montar</span>();
+              </p>
+            </div>
+          </div>
+          <div style="flex:2;display:flex;flex-direction:column;gap:18px">
+            <p style="font-size:26px;line-height:1.4;color:#3E4955"><span style="color:#1A56A0"><b>L339</b></span> uma
+              passada pelos 584.121 filmes; <b>posicao</b> é o que todas as estruturas guardam</p>
+            <p
+              style="font-size:26px;line-height:1.4;color:#3E4955;border-left:6px solid #2A78D6;padding:0px 0px 0px 16px">
+              <span style="color:#1A56A0"><b>L341–344</b></span> Módulo 1: o filme entra na lista do seu tipo e na de
+              cada gênero
+            </p>
+            <p
+              style="font-size:26px;line-height:1.4;color:#3E4955;border-left:6px solid #0D8A6A;padding:0px 0px 0px 16px">
+              <span style="color:#0B6E55"><b>L345–350</b></span> Módulo 2: ano e duração vão para os baldes; −1 (sem
+              informação) fica de fora
+            </p>
+            <p
+              style="font-size:26px;line-height:1.4;color:#3E4955;border-left:6px solid #0D8A6A;padding:0px 0px 0px 16px">
+              <span style="color:#0B6E55"><b>L352–353</b></span> só depois de tudo lido: liga os baldes em árvore, uma
+              vez
+            </p>
+          </div>
+        </div>
+        <p
+          style="position:absolute;left:112px;bottom:56px;width:1696px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#5B6774">
+          Índices: 44,2 ms · baldes: 7,5 ms · montar: 0,08 ms (tests/logs/benchmark.tsv)</p>
+      </section>
+      <section id="m1-indices" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 112px 150px;display:flex;flex-direction:column;gap:24px">
+        <p
+          style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#1A56A0">
+          Módulo 1 · índice por categoria</p>
+        <h2 style="font-size:52px;font-weight:700;line-height:1.1">IndiceCategoria: uma lista de posições por nome</h2>
+        <div style="display:flex;gap:36px;align-items:start">
+          <div style="flex:3;display:flex;flex-direction:column;gap:20px">
+            <div
+              style="display:flex;flex-direction:column;background:#111A24;border-radius:16px;padding:0px 0px 16px 0px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;background:#0C141C;padding:10px 24px;border-radius:16px 16px 0px 0px">
+                <b>src/indice.cpp</b> · IndiceCategoria::adicionar() · linhas 3–12
+              </p>
+              <div style="display:flex;flex-direction:column;padding:10px 0px 0px 0px">
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  <span style="color:#6F8396">3</span>&#160;&#160;&#160;<span style="color:#8FB8FF">void</span>
+                  IndiceCategoria::<span style="color:#FFD479">adicionar</span>(<span style="color:#8FB8FF">const</span>
+                  std::string&amp; chave,
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span style="color:#8FB8FF">int</span> indiceFilme) {
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                  <span style="color:#FFD479">4</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                    style="color:#8FB8FF">for</span> (size_t i = <span style="color:#F5A3C7">0</span>; i &lt;
+                  chaves.<span style="color:#FFD479">size</span>(); i++) {
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                  <span style="color:#FFD479">5</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                    style="color:#8FB8FF">if</span> (chaves[i] == chave) {
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                  <span
+                    style="color:#FFD479">6</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;listas[i].<span
+                    style="color:#FFD479">push_back</span>(indiceFilme);
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  <span
+                    style="color:#6F8396">7</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                    style="color:#8FB8FF">return</span>;
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  <span style="color:#6F8396">8</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  <span style="color:#6F8396">9</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;}
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                  <span style="color:#FFD479">10</span>&#160;&#160;&#160;&#160;&#160;&#160;chaves.<span
+                    style="color:#FFD479">push_back</span>(chave);
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                  <span style="color:#FFD479">11</span>&#160;&#160;&#160;&#160;&#160;&#160;listas.<span
+                    style="color:#FFD479">push_back</span>(std::vector&lt;<span
+                    style="color:#8FB8FF">int</span>&gt;{indiceFilme});
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  <span style="color:#6F8396">12</span>&#160;&#160;}
+                </p>
+              </div>
+            </div>
+            <div style="display:flex;gap:20px">
+              <div style="flex:1;background:#FFFFFF;border:1px solid #DDE2E6;border-radius:12px;padding:16px 20px">
+                <p style="font-size:24px;line-height:1.35;color:#3E4955"><span
+                    style="color:#1A56A0"><b>L4–7</b></span> nome já existe: a posição vai para o fim da lista dele
+                </p>
+              </div>
+              <div style="flex:1;background:#FFFFFF;border:1px solid #DDE2E6;border-radius:12px;padding:16px 20px">
+                <p style="font-size:24px;line-height:1.35;color:#3E4955"><span
+                    style="color:#1A56A0"><b>L10–11</b></span> nome novo: cria a lista já com o filme; chaves[i] ↔
+                  listas[i]</p>
+              </div>
+            </div>
+          </div>
+          <div style="flex:2;display:flex;flex-direction:column;gap:20px">
+            <div
+              style="display:grid;grid-template-columns:auto 1fr;gap:12px 16px;align-items:center;background:#111A24;border-radius:16px;padding:24px 28px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2;text-align:right">
+                short</p>
+              <div style="display:flex;gap:8px">
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  0</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  3</p>
+              </div>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2;text-align:right">
+                tvEpisode</p>
+              <div style="display:flex;gap:8px">
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  1</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  2</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  4</p>
+              </div>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2;text-align:right">
+                Action</p>
+              <div style="display:flex;gap:8px">
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  0</p>
+              </div>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2;text-align:right">
+                Short</p>
+              <div style="display:flex;gap:8px">
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  0</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  3</p>
+              </div>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2;text-align:right">
+                Drama</p>
+              <div style="display:flex;gap:8px">
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  1</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  2</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  4</p>
+              </div>
+            </div>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955">Os 5 primeiros filmes do arquivo. O filme 0 é
+              Action,Short e entra em duas listas.</p>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955">Posições entram na ordem 0, 1, 2…: <b>toda lista já
+                sai crescente</b>. A seção do E / OU depende disso.</p>
+          </div>
+        </div>
+      </section>
+      <section id="m1-filtros" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 112px 150px;display:flex;flex-direction:column;gap:24px">
+        <p
+          style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#1A56A0">
+          Módulo 1 · combinar filtros</p>
+        <h2 style="font-size:52px;font-weight:700;line-height:1.1">aplicarFiltros: combina as listas, filtro a filtro
+        </h2>
+        <div style="display:flex;flex-direction:column;background:#111A24;border-radius:16px;padding:0px 0px 16px 0px">
+          <p
+            style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;background:#0C141C;padding:10px 24px;border-radius:16px 16px 0px 0px">
+            <b>src/main.cpp</b> · aplicarFiltros() · linhas 108–121
+          </p>
+          <div style="display:flex;flex-direction:column;padding:10px 0px 0px 0px">
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">108</span>&#160;&#160;std::vector&lt;<span
+                style="color:#8FB8FF">int</span>&gt; resultado;
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">109</span>&#160;&#160;<span style="color:#8FB8FF">for</span> (size_t i = <span
+                style="color:#F5A3C7">0</span>; i &lt; filtros.<span style="color:#FFD479">size</span>(); i++) {
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+              <span style="color:#FFD479">110</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                style="color:#8FB8FF">const</span> IndiceCategoria&amp; indice = (filtros[i].tipoCampo == <span
+                style="color:#F2C48D">"tipo"</span>) ? indiceTipo : indiceGenero;
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+              <span style="color:#FFD479">111</span>&#160;&#160;&#160;&#160;&#160;&#160;std::vector&lt;<span
+                style="color:#8FB8FF">int</span>&gt; parcial = indice.<span
+                style="color:#FFD479">buscar</span>(filtros[i].valor);
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">113</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                style="color:#8FB8FF">if</span> (i == <span style="color:#F5A3C7">0</span>) {
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span
+                style="color:#6F8396">114</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;resultado =
+              parcial;
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">115</span>&#160;&#160;&#160;&#160;&#160;&#160;} <span
+                style="color:#8FB8FF">else if</span> (operador == <span style="color:#F2C48D">"OU"</span>) {
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+              <span
+                style="color:#FFD479">116</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;resultado =
+              <span style="color:#FFD479">uniao</span>(resultado, parcial);
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">117</span>&#160;&#160;&#160;&#160;&#160;&#160;} <span
+                style="color:#8FB8FF">else</span> {
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+              <span
+                style="color:#FFD479">118</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;resultado =
+              <span style="color:#FFD479">intersecao</span>(resultado, parcial);
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">119</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">120</span>&#160;&#160;}
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">121</span>&#160;&#160;<span style="color:#8FB8FF">return</span> resultado;
+            </p>
+          </div>
+        </div>
+        <div style="display:flex;gap:20px">
+          <div style="flex:1;background:#FFFFFF;border:1px solid #DDE2E6;border-radius:12px;padding:16px 20px">
+            <p style="font-size:24px;line-height:1.35;color:#3E4955"><span style="color:#1A56A0"><b>L110–111</b></span>
+              cada filtro escolhe o índice (tipo ou gênero) e pega a lista pronta</p>
+          </div>
+          <div style="flex:1;background:#FFFFFF;border:1px solid #DDE2E6;border-radius:12px;padding:16px 20px">
+            <p style="font-size:24px;line-height:1.35;color:#3E4955"><span style="color:#1A56A0"><b>L116 /
+                  L118</b></span> combina com o resultado até aqui: OU = união, E = interseção</p>
+          </div>
+          <div style="flex:1;background:#FFFFFF;border:1px solid #DDE2E6;border-radius:12px;padding:16px 20px">
+            <p style="font-size:24px;line-height:1.35;color:#3E4955">Como as duas devolvem listas <b>em ordem</b>, dá
+              para encadear 3 ou mais filtros</p>
+          </div>
+        </div>
+        <p
+          style="position:absolute;left:112px;bottom:56px;width:1696px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#5B6774">
+          Exemplo: tipo=movie E genero=Comedy → intersecao(lista de movie, lista de Comedy) → 3.382 filmes</p>
+      </section>
+      <section id="m1-cruzar" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:36px">
+        <p
+          style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#1A56A0">
+          Módulo 1 · filtros E / OU</p>
+        <h2 style="font-size:60px;font-weight:700;line-height:1.1">E / OU: as duas listas andam juntas</h2>
+        <div style="display:flex;gap:32px;align-items:start">
+          <div
+            style="flex:11;display:flex;flex-direction:column;background:#111A24;border-radius:20px;padding:0px 0px 24px 0px">
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;background:#0C141C;padding:14px 28px;border-radius:20px 20px 0px 0px">
+              <b>src/indice.cpp</b> · intersecao()
+            </p>
+            <div style="display:flex;flex-direction:column;padding:16px 0px 0px 0px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 28px;background:#2C2A20">
+                <span style="color:#FFD479">27</span>&#160;&#160;<span style="color:#8FB8FF">while</span> (i &lt;
+                a.size() &amp;&amp; j &lt; b.size()) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 28px;background:#2C2A20">
+                <span style="color:#FFD479">28</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">if</span> (a[i] == b[j]) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 28px">
+                <span
+                  style="color:#6F8396">29</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;resultado.<span
+                  style="color:#FFD479">push_back</span>(a[i]);
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 28px">
+                <span style="color:#6F8396">30</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;i++;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 28px">
+                <span style="color:#6F8396">31</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;j++;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 28px;background:#2C2A20">
+                <span style="color:#FFD479">32</span>&#160;&#160;&#160;&#160;&#160;&#160;} <span
+                  style="color:#8FB8FF">else if</span> (a[i] &lt; b[j]) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 28px">
+                <span style="color:#6F8396">33</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;i++;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 28px">
+                <span style="color:#6F8396">34</span>&#160;&#160;&#160;&#160;&#160;&#160;} <span
+                  style="color:#8FB8FF">else</span> {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 28px">
+                <span style="color:#6F8396">35</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;j++;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 28px">
+                <span style="color:#6F8396">36</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 28px">
+                <span style="color:#6F8396">37</span>&#160;&#160;}
+              </p>
+            </div>
+          </div>
+          <div style="flex:10;display:flex;flex-direction:column;gap:20px">
+            <div
+              style="display:flex;flex-direction:column;gap:12px;background:#111A24;border-radius:20px;padding:28px 32px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;color:#5AA0F0">
+                a = [0, 3, 5, 9] · b = [3, 4, 9]</p>
+              <table style="font-size:26px;color:#E3EAF2">
+                <tr>
+                  <th style="width:18%;color:#8EA2B6">a[i]</th>
+                  <th style="width:18%;color:#8EA2B6">b[j]</th>
+                  <th style="width:64%;color:#8EA2B6">decisão</th>
+                </tr>
+                <tr>
+                  <td>0</td>
+                  <td>3</td>
+                  <td>0 &lt; 3 → avança i</td>
+                </tr>
+                <tr style="background:#1C3352">
+                  <td>3</td>
+                  <td>3</td>
+                  <td>iguais → 3 entra</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>4</td>
+                  <td>4 &lt; 5 → avança j</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>9</td>
+                  <td>5 &lt; 9 → avança i</td>
+                </tr>
+                <tr style="background:#1C3352">
+                  <td>9</td>
+                  <td>9</td>
+                  <td>iguais → 9 entra</td>
+                </tr>
+              </table>
+            </div>
+            <p style="font-size:28px;line-height:1.45;color:#3E4955">As listas estão em ordem. Se <b>a[i] &lt; b[j]</b>,
+              a[i] nunca vai aparecer em b: descarta sem procurar. No máximo <b>|a| + |b|</b> passos. O OU segue a mesma
+              ideia.</p>
+          </div>
+        </div>
+        <p
+          style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#5B6774">
+          Busca e Ordenação · Projeto 1 · Módulo 1</p>
+      </section>
+      <section id="m1-uniao" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 112px 150px;display:flex;flex-direction:column;gap:24px">
+        <p
+          style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#1A56A0">
+          Módulo 1 · filtro OU</p>
+        <h2 style="font-size:52px;font-weight:700;line-height:1.1">uniao: a cada passo entra o menor dos dois</h2>
+        <div style="display:flex;gap:36px;align-items:start">
+          <div
+            style="flex:3;display:flex;flex-direction:column;background:#111A24;border-radius:16px;padding:0px 0px 16px 0px">
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;background:#0C141C;padding:10px 24px;border-radius:16px 16px 0px 0px">
+              <b>src/indice.cpp</b> · uniao() · linhas 45–65
+            </p>
+            <div style="display:flex;flex-direction:column;padding:10px 0px 0px 0px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">45</span>&#160;&#160;<span style="color:#8FB8FF">while</span> (i &lt;
+                a.<span style="color:#FFD479">size</span>() &amp;&amp; j &lt; b.<span
+                  style="color:#FFD479">size</span>()) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                <span style="color:#FFD479">46</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">if</span> (a[i] == b[j]) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                <span
+                  style="color:#FFD479">47</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;resultado.<span
+                  style="color:#FFD479">push_back</span>(a[i]);
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">48</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;i++;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">49</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;j++;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                <span style="color:#FFD479">50</span>&#160;&#160;&#160;&#160;&#160;&#160;} <span
+                  style="color:#8FB8FF">else if</span> (a[i] &lt; b[j]) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span
+                  style="color:#6F8396">51</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;resultado.<span
+                  style="color:#FFD479">push_back</span>(a[i]);
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">52</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;i++;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                <span style="color:#FFD479">53</span>&#160;&#160;&#160;&#160;&#160;&#160;} <span
+                  style="color:#8FB8FF">else</span> {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span
+                  style="color:#6F8396">54</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;resultado.<span
+                  style="color:#FFD479">push_back</span>(b[j]);
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">55</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;j++;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">56</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">57</span>&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#6F8396;padding:0px 24px">
+                <i>58–65&#160;&#160;a lista que sobrou entra inteira, já em ordem</i>
+              </p>
+            </div>
+          </div>
+          <div style="flex:2;display:flex;flex-direction:column;gap:20px">
+            <div
+              style="display:grid;grid-template-columns:auto 1fr;gap:12px 16px;align-items:center;background:#111A24;border-radius:16px;padding:24px 28px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2;text-align:right">
+                a</p>
+              <div style="display:flex;gap:8px">
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  0</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  3</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  5</p>
+              </div>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2;text-align:right">
+                b</p>
+              <div style="display:flex;gap:8px">
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  3</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  4</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:600;background:#5AA0F0;color:#08111A;padding:2px 14px;border-radius:6px">
+                  9</p>
+              </div>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:700;color:#5AA0F0;text-align:right">
+                OU</p>
+              <div style="display:flex;gap:8px">
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:700;background:#FFD479;color:#1A1405;padding:2px 14px;border-radius:6px">
+                  0</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:700;background:#FFD479;color:#1A1405;padding:2px 14px;border-radius:6px">
+                  3</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:700;background:#FFD479;color:#1A1405;padding:2px 14px;border-radius:6px">
+                  4</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:700;background:#FFD479;color:#1A1405;padding:2px 14px;border-radius:6px">
+                  5</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;font-weight:700;background:#FFD479;color:#1A1405;padding:2px 14px;border-radius:6px">
+                  9</p>
+              </div>
+            </div>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955">0 é o menor · 3 está nas duas e entra uma vez · 4 ·
+              5 · a acabou, o resto de b (9) entra inteiro.</p>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><span style="color:#1A56A0"><b>L46–49</b></span>
+              iguais: entra uma vez e os dois andam, então nada se repete.</p>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><span style="color:#1A56A0"><b>L50–55</b></span>
+              entra o menor; o resultado sai crescente, pronto para o próximo filtro.</p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;background:#E9F1FB;color:#1A56A0;padding:10px 16px;border-radius:8px">
+              O(|a| + |b|) · Comedy OU Drama: 1,27 ms</p>
+          </div>
+        </div>
+        <p
+          style="position:absolute;left:112px;bottom:56px;width:1696px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#5B6774">
+          Versão anterior: procurava cada item de b dentro de a inteira, 5.600 ms</p>
+      </section>
+      <section id="m1-ganho" data-transition="fade"
+        style="background:#111A24;color:#E3EAF2;font-family:'IBM Plex Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:32px">
+        <p
+          style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#5AA0F0">
+          Módulo 1 · resultado medido</p>
+        <h2 style="font-size:112px;font-weight:700;line-height:1.05;color:#F2F5F8">18.900 ms → <span
+            style="color:#FFD479">1,27 ms</span></h2>
+        <p style="font-size:32px;color:#AAB8C7"><b>tvEpisode E Drama</b>: 474.707 × 191.271 posições cruzadas</p>
+        <table style="font-size:30px;color:#E3EAF2">
+          <tr>
+            <th style="width:34%;color:#8EA2B6">Busca</th>
+            <th style="width:22%;color:#8EA2B6;text-align:right">Versão anterior</th>
+            <th style="width:22%;color:#8EA2B6;text-align:right">Sem índice</th>
+            <th style="width:22%;color:#8EA2B6;text-align:right">Agora</th>
+          </tr>
+          <tr>
+            <td>short E Animation</td>
+            <td style="text-align:right">371 ms</td>
+            <td style="text-align:right">6,2 ms</td>
+            <td style="text-align:right">0,13 ms</td>
+          </tr>
+          <tr>
+            <td>movie E Comedy</td>
+            <td style="text-align:right">737 ms</td>
+            <td style="text-align:right">6,1 ms</td>
+            <td style="text-align:right">0,25 ms</td>
+          </tr>
+          <tr>
+            <td>tvEpisode E Drama</td>
+            <td style="text-align:right">18.900 ms</td>
+            <td style="text-align:right">14,4 ms</td>
+            <td style="text-align:right">1,27 ms</td>
+          </tr>
+          <tr>
+            <td>Comedy OU Drama</td>
+            <td style="text-align:right">5.600 ms</td>
+            <td style="text-align:right">—</td>
+            <td style="text-align:right">1,27 ms</td>
+          </tr>
+        </table>
+        <p style="font-size:32px;line-height:1.4;color:#E3EAF2">A versão anterior comparava cada item com a outra lista
+          inteira, O(|a|·|b|): era mais lenta até que olhar a base sem índice. Agora é <span
+            style="color:#FFD479"><b>14.900× mais rápida</b></span> nesse caso.</p>
+        <p
+          style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6">
+          Fonte: tests/logs/benchmark.tsv · mediana de 3 execuções</p>
+      </section>
+      <section id="m2-baldes" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 112px 150px;display:flex;flex-direction:column;gap:24px">
+        <p
+          style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#0B6E55">
+          Módulo 2 · passo 1: baldes</p>
+        <h2 style="font-size:52px;font-weight:700;line-height:1.1">Os valores ficam em ordem sem ordenar nada</h2>
+        <div style="display:flex;gap:36px;align-items:start">
+          <div style="flex:3;display:flex;flex-direction:column;gap:16px">
+            <div
+              style="display:flex;flex-direction:column;background:#111A24;border-radius:16px;padding:0px 0px 16px 0px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;background:#0C141C;padding:10px 24px;border-radius:16px 16px 0px 0px">
+                <b>src/arvore.cpp</b> · adicionar() · linhas 3–10
+              </p>
+              <div style="display:flex;flex-direction:column;padding:10px 0px 0px 0px">
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  <span style="color:#6F8396">3</span>&#160;&#160;&#160;<span style="color:#8FB8FF">void</span>
+                  ArvoreNumerica::<span style="color:#FFD479">adicionar</span>(<span style="color:#8FB8FF">int</span>
+                  valor, <span style="color:#8FB8FF">int</span> indiceFilme) {
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  <span style="color:#6F8396">4</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                    style="color:#8FB8FF">if</span> (valor &lt; <span style="color:#F5A3C7">0</span>) {
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  <span style="color:#6F8396">5</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                    style="color:#8FB8FF">return</span>;
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  <span style="color:#6F8396">6</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;}
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                  <span style="color:#FFD479">7</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                    style="color:#8FB8FF">if</span> (valor &gt;= <span style="color:#8FB8FF">static_cast</span>&lt;<span
+                    style="color:#8FB8FF">int</span>&gt;(filmesPorValor.<span style="color:#FFD479">size</span>())) {
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                  <span
+                    style="color:#FFD479">8</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;filmesPorValor.<span
+                    style="color:#FFD479">resize</span>(valor + <span style="color:#F5A3C7">1</span>);
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  <span style="color:#6F8396">9</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;}
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                  <span style="color:#FFD479">10</span>&#160;&#160;&#160;&#160;&#160;&#160;filmesPorValor[valor].<span
+                    style="color:#FFD479">push_back</span>(indiceFilme);
+                </p>
+              </div>
+            </div>
+            <div
+              style="display:flex;flex-direction:column;background:#111A24;border-radius:16px;padding:0px 0px 16px 0px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;background:#0C141C;padding:10px 24px;border-radius:16px 16px 0px 0px">
+                <b>src/arvore.cpp</b> · montar() · linhas 15–24
+              </p>
+              <div style="display:flex;flex-direction:column;padding:10px 0px 0px 0px">
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                  <span style="color:#FFD479">15</span>&#160;&#160;<span style="color:#8FB8FF">for</span> (size_t valor
+                  = <span style="color:#F5A3C7">0</span>; valor &lt; filmesPorValor.<span
+                    style="color:#FFD479">size</span>(); valor++) {
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  <span style="color:#6F8396">16</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                    style="color:#8FB8FF">if</span> (!filmesPorValor[valor].<span style="color:#FFD479">empty</span>())
+                  {
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#6F8396;padding:0px 24px">
+                  <i>17–23&#160;&#160;&#160;&#160;cria o nó {valor, −1, −1} e faz nos.push_back(novo)</i>
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                  <span style="color:#FFD479">24</span>&#160;&#160;raiz = <span style="color:#FFD479">ligar</span>(<span
+                    style="color:#F5A3C7">0</span>, <span style="color:#8FB8FF">static_cast</span>&lt;<span
+                    style="color:#8FB8FF">int</span>&gt;(nos.<span style="color:#FFD479">size</span>()) - <span
+                    style="color:#F5A3C7">1</span>);
+                </p>
+              </div>
+            </div>
+          </div>
+          <div style="flex:2;display:flex;flex-direction:column;gap:18px">
+            <div
+              style="display:flex;flex-direction:column;gap:10px;background:#111A24;border-radius:16px;padding:22px 26px">
+              <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6">chegam: 120,
+                45, 90, 45</p>
+              <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2"><span
+                  style="color:#5AA0F0">[45]</span>&#160; → 1, 3</p>
+              <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2"><span
+                  style="color:#5AA0F0">[90]</span>&#160; → 2</p>
+              <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2"><span
+                  style="color:#5AA0F0">[120]</span> → 0</p>
+              <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#FFD479">nos = [45,
+                90, 120]</p>
+            </div>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><span style="color:#0B6E55"><b>L7–10</b></span> o
+              índice do vetor <b>é</b> o valor: o filme vai direto para o seu balde.</p>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><span style="color:#0B6E55"><b>L15</b></span> o
+              contador anda 0, 1, 2…: os nós saem em ordem sem comparar valores (ideia do counting sort).</p>
+          </div>
+        </div>
+      </section>
+      <section id="m2-meio" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 112px 150px;display:flex;flex-direction:column;gap:24px">
+        <p
+          style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#0B6E55">
+          Módulo 2 · passo 2: montar pelo meio</p>
+        <h2 style="font-size:52px;font-weight:700;line-height:1.1">ligar(): o meio vira o topo, recursivamente</h2>
+        <div style="display:flex;gap:36px;align-items:start">
+          <div style="flex:1;display:flex;flex-direction:column;gap:16px">
+            <div
+              style="display:flex;flex-direction:column;background:#111A24;border-radius:16px;padding:0px 0px 16px 0px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;background:#0C141C;padding:10px 24px;border-radius:16px 16px 0px 0px">
+                <b>src/arvore.cpp</b> · ligar() · linhas 27–35
+              </p>
+              <div style="display:flex;flex-direction:column;padding:10px 0px 0px 0px">
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  <span style="color:#6F8396">27</span>&#160;&#160;<span style="color:#8FB8FF">int</span>
+                  ArvoreNumerica::<span style="color:#FFD479">ligar</span>(<span style="color:#8FB8FF">int</span>
+                  inicio, <span style="color:#8FB8FF">int</span> fim) {
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                  <span style="color:#FFD479">28</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                    style="color:#8FB8FF">if</span> (inicio &gt; fim) {
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                  <span style="color:#FFD479">29</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                    style="color:#8FB8FF">return</span> -<span style="color:#F5A3C7">1</span>;
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  <span style="color:#6F8396">30</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                  <span style="color:#FFD479">31</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                    style="color:#8FB8FF">int</span> meio = (inicio + fim) / <span style="color:#F5A3C7">2</span>;
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                  <span style="color:#FFD479">32</span>&#160;&#160;&#160;&#160;&#160;&#160;nos[meio].esquerda = <span
+                    style="color:#FFD479">ligar</span>(inicio, meio - <span style="color:#F5A3C7">1</span>);
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                  <span style="color:#FFD479">33</span>&#160;&#160;&#160;&#160;&#160;&#160;nos[meio].direita =
+                  <span style="color:#FFD479">ligar</span>(meio + <span style="color:#F5A3C7">1</span>, fim);
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  <span style="color:#6F8396">34</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                    style="color:#8FB8FF">return</span> meio;
+                </p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                  <span style="color:#6F8396">35</span>&#160;&#160;}
+                </p>
+              </div>
+            </div>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><span style="color:#0B6E55"><b>L28–29</b></span>
+              inicio &gt; fim = pedaço com <b>0 nós</b>. Cada chamada passa pedaços menores (7 → 3 → 1 → 0): a recursão
+              sempre termina.</p>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><span style="color:#0B6E55"><b>L31–33</b></span> o
+              meio vira o topo; a metade menor vira a subárvore esquerda e a maior, a direita.</p>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><span style="color:#0B6E55"><b>Folha</b></span>:
+              pedaço de 1 nó; as duas chamadas seguintes recebem pedaço vazio e devolvem −1.</p>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:18px">
+            <div style="position:relative;width:800px;height:320px;background:#111A24;border-radius:16px">
+              <svg class="linha" width="1" height="1">
+                <line x1="400" y1="50" x2="200" y2="160" stroke="#4A6380" stroke-width="3" stroke-linecap="round" />
+              </svg>
+              <svg class="linha" width="1" height="1">
+                <line x1="400" y1="50" x2="600" y2="160" stroke="#4A6380" stroke-width="3" stroke-linecap="round" />
+              </svg>
+              <svg class="linha" width="1" height="1">
+                <line x1="200" y1="160" x2="100" y2="265" stroke="#4A6380" stroke-width="3" stroke-linecap="round" />
+              </svg>
+              <svg class="linha" width="1" height="1">
+                <line x1="200" y1="160" x2="300" y2="265" stroke="#4A6380" stroke-width="3" stroke-linecap="round" />
+              </svg>
+              <svg class="linha" width="1" height="1">
+                <line x1="600" y1="160" x2="500" y2="265" stroke="#4A6380" stroke-width="3" stroke-linecap="round" />
+              </svg>
+              <svg class="linha" width="1" height="1">
+                <line x1="600" y1="160" x2="700" y2="265" stroke="#4A6380" stroke-width="3" stroke-linecap="round" />
+              </svg>
+              <p
+                style="position:absolute;left:362px;top:12px;width:76px;height:76px;border-radius:50%;background:#1B2838;border:3px solid #5AA0F0;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;font-weight:600;color:#E3EAF2;text-align:center;line-height:2.5">
+                90</p>
+              <p
+                style="position:absolute;left:162px;top:122px;width:76px;height:76px;border-radius:50%;background:#1B2838;border:3px solid #5AA0F0;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;font-weight:600;color:#E3EAF2;text-align:center;line-height:2.5">
+                60</p>
+              <p
+                style="position:absolute;left:562px;top:122px;width:76px;height:76px;border-radius:50%;background:#1B2838;border:3px solid #5AA0F0;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;font-weight:600;color:#E3EAF2;text-align:center;line-height:2.5">
+                120</p>
+              <p
+                style="position:absolute;left:62px;top:227px;width:76px;height:76px;border-radius:50%;background:#1B2838;border:3px solid #FFD479;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;font-weight:600;color:#E3EAF2;text-align:center;line-height:2.5">
+                45</p>
+              <p
+                style="position:absolute;left:262px;top:227px;width:76px;height:76px;border-radius:50%;background:#1B2838;border:3px solid #FFD479;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;font-weight:600;color:#E3EAF2;text-align:center;line-height:2.5">
+                75</p>
+              <p
+                style="position:absolute;left:462px;top:227px;width:76px;height:76px;border-radius:50%;background:#1B2838;border:3px solid #FFD479;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;font-weight:600;color:#E3EAF2;text-align:center;line-height:2.5">
+                100</p>
+              <p
+                style="position:absolute;left:662px;top:227px;width:76px;height:76px;border-radius:50%;background:#1B2838;border:3px solid #FFD479;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;font-weight:600;color:#E3EAF2;text-align:center;line-height:2.5">
+                150</p>
+            </div>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#3E4955">
+              ligar(0,6) → meio 3 = 90<br>&#160;&#160;ligar(0,2) → 60 · ligar(4,6) →
+              120<br>&#160;&#160;&#160;&#160;ligar(0,0) → 45 · ligar(0,−1) → −1</p>
+          </div>
+        </div>
+      </section>
+      <section id="m2-busca" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 112px 150px;display:flex;flex-direction:column;gap:24px">
+        <p
+          style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#0B6E55">
+          Módulo 2 · passo 3: busca por intervalo</p>
+        <h2 style="font-size:52px;font-weight:700;line-height:1.1">coletar(): percurso em-ordem com poda</h2>
+        <div style="display:flex;gap:36px;align-items:start">
+          <div
+            style="width:1130px;display:flex;flex-direction:column;background:#111A24;border-radius:16px;padding:0px 0px 16px 0px">
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;background:#0C141C;padding:10px 24px;border-radius:16px 16px 0px 0px">
+              <b>src/arvore.cpp</b> · coletar() · linhas 46–61
+            </p>
+            <div style="display:flex;flex-direction:column;padding:10px 0px 0px 0px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">46</span>&#160;&#160;<span style="color:#8FB8FF">void</span> ArvoreNumerica::<span
+                  style="color:#FFD479">coletar</span>(<span style="color:#8FB8FF">int</span> no, <span
+                  style="color:#8FB8FF">int</span> minimo, <span style="color:#8FB8FF">int</span> maximo,
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;std::vector&lt;<span
+                  style="color:#8FB8FF">int</span>&gt;&amp; resultado) <span style="color:#8FB8FF">const</span> {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">47</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">if</span> (no &lt; <span style="color:#F5A3C7">0</span>) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">48</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">return</span>;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">49</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">50</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">const</span> No&amp; atual = nos[no];
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                <span style="color:#FFD479">51</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">if</span> (atual.valor &gt; minimo) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">52</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#FFD479">coletar</span>(atual.esquerda, minimo, maximo, resultado);
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">53</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                <span style="color:#FFD479">54</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">if</span> (atual.valor &gt;= minimo &amp;&amp; atual.valor &lt;= maximo) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">55</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">const</span> std::vector&lt;<span style="color:#8FB8FF">int</span>&gt;&amp; filmes =
+                filmesPorValor[atual.valor];
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span
+                  style="color:#6F8396">56</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;resultado.<span
+                  style="color:#FFD479">insert</span>(resultado.<span style="color:#FFD479">end</span>(), filmes.<span
+                  style="color:#FFD479">begin</span>(), filmes.<span style="color:#FFD479">end</span>());
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">57</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                <span style="color:#FFD479">58</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">if</span> (atual.valor &lt; maximo) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">59</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#FFD479">coletar</span>(atual.direita, minimo, maximo, resultado);
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">60</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">61</span>&#160;&#160;}
+              </p>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:16px">
+            <div style="position:relative;width:480px;height:236px;background:#111A24;border-radius:16px">
+              <div
+                style="position:absolute;left:20px;top:82px;width:220px;height:146px;background:#172331;border-radius:12px">
+              </div>
+              <svg class="linha" width="1" height="1">
+                <line x1="240" y1="38" x2="120" y2="118" stroke="#2C3C4E" stroke-width="3" stroke-linecap="round" />
+              </svg>
+              <svg class="linha" width="1" height="1">
+                <line x1="240" y1="38" x2="360" y2="118" stroke="#5AA0F0" stroke-width="4" stroke-linecap="round" />
+              </svg>
+              <svg class="linha" width="1" height="1">
+                <line x1="120" y1="118" x2="60" y2="196" stroke="#2C3C4E" stroke-width="3" stroke-linecap="round" />
+              </svg>
+              <svg class="linha" width="1" height="1">
+                <line x1="120" y1="118" x2="180" y2="196" stroke="#2C3C4E" stroke-width="3" stroke-linecap="round" />
+              </svg>
+              <svg class="linha" width="1" height="1">
+                <line x1="360" y1="118" x2="300" y2="196" stroke="#5AA0F0" stroke-width="4" stroke-linecap="round" />
+              </svg>
+              <svg class="linha" width="1" height="1">
+                <line x1="360" y1="118" x2="420" y2="196" stroke="#5AA0F0" stroke-width="4" stroke-linecap="round" />
+              </svg>
+              <p
+                style="position:absolute;left:210px;top:8px;width:60px;height:60px;border-radius:50%;background:#1B2838;border:3px solid #AAB8C7;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;color:#E3EAF2;text-align:center;line-height:2.25">
+                90</p>
+              <p
+                style="position:absolute;left:90px;top:88px;width:60px;height:60px;border-radius:50%;background:#111A24;border:2px dashed #3D5066;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#6F8396;text-align:center;line-height:2.3">
+                60</p>
+              <p
+                style="position:absolute;left:330px;top:88px;width:60px;height:60px;border-radius:50%;background:#5AA0F0;border:3px solid #5AA0F0;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:700;color:#08111A;text-align:center;line-height:2.25">
+                120</p>
+              <p
+                style="position:absolute;left:30px;top:166px;width:60px;height:60px;border-radius:50%;background:#111A24;border:2px dashed #3D5066;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#6F8396;text-align:center;line-height:2.3">
+                45</p>
+              <p
+                style="position:absolute;left:150px;top:166px;width:60px;height:60px;border-radius:50%;background:#111A24;border:2px dashed #3D5066;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#6F8396;text-align:center;line-height:2.3">
+                75</p>
+              <p
+                style="position:absolute;left:270px;top:166px;width:60px;height:60px;border-radius:50%;background:#5AA0F0;border:3px solid #5AA0F0;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:700;color:#08111A;text-align:center;line-height:2.25">
+                100</p>
+              <p
+                style="position:absolute;left:390px;top:166px;width:60px;height:60px;border-radius:50%;background:#1B2838;border:3px solid #AAB8C7;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;color:#E3EAF2;text-align:center;line-height:2.25">
+                150</p>
+            </div>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><b>Busca 95..130.</b> <span
+                style="color:#0B6E55"><b>L51</b></span> 90 &gt; 95? não: a esquerda inteira é pulada.</p>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><span style="color:#0B6E55"><b>L54</b></span> 100 e
+              120 estão no intervalo: o balde inteiro é copiado. A esquerda vem antes, então o resultado sai crescente.
+            </p>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><span style="color:#0B6E55"><b>L58</b></span> 150
+              &lt; 130? não: não desce mais.</p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;background:#E3F3EE;color:#0B6E55;padding:10px 16px;border-radius:8px">
+              nós visitados + R cópias · ano 2000: 7 de 134</p>
+          </div>
+        </div>
+      </section>
+      <section id="m2-alternativas" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:36px">
+        <p
+          style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#0B6E55">
+          Módulo 2 · decisão</p>
+        <h2 style="font-size:60px;font-weight:700;line-height:1.1">Por que não AVL: medimos as três opções</h2>
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <p style="font-size:26px;color:#4A5563">Montar as estruturas de ano e de duração com os 750 mil valores, em ms
+          </p>
+          <div style="display:flex;gap:20px;align-items:center">
+            <p style="width:420px;font-size:30px;text-align:right">Baldes + montar pelo meio</p>
+            <div style="width:198px;height:44px;background:#0D8A6A;border-radius:0px 6px 6px 0px"></div>
+            <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:32px;font-weight:700">8,0</p>
+          </div>
+          <div style="display:flex;gap:20px;align-items:center">
+            <p style="width:420px;font-size:30px;text-align:right">Árvore AVL (versão anterior)</p>
+            <div style="width:699px;height:44px;background:#9AA6B2;border-radius:0px 6px 6px 0px"></div>
+            <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:32px;font-weight:700">28,2</p>
+          </div>
+          <div style="display:flex;gap:20px;align-items:center">
+            <p style="width:420px;font-size:30px;text-align:right">Merge sort feito à mão</p>
+            <div style="width:900px;height:44px;background:#9AA6B2;border-radius:0px 6px 6px 0px"></div>
+            <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:32px;font-weight:700">36,3</p>
+          </div>
+        </div>
+        <p style="font-size:30px;line-height:1.45;color:#3E4955">Depois de carregar, nenhum filme entra: <b>não há o que
+            reequilibrar</b>. Montada pelo meio, a árvore fica ainda mais baixa que a AVL.</p>
+        <p
+          style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#5B6774">
+          Fonte: tests/logs/benchmark.tsv · mediana de 3 execuções</p>
+      </section>
+      <section id="binaria" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 112px 150px;display:flex;flex-direction:column;gap:24px">
+        <p
+          style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#1A56A0">
+          Cinemas · ligar cinema → filme</p>
+        <h2 style="font-size:52px;font-weight:700;line-height:1.1">Busca binária no carregamento: código → posição</h2>
+        <div style="display:flex;gap:36px;align-items:start">
+          <div
+            style="flex:none;width:900px;display:flex;flex-direction:column;background:#111A24;border-radius:16px;padding:0px 0px 16px 0px">
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;background:#0C141C;padding:10px 24px;border-radius:16px 16px 0px 0px">
+              <b>src/carregador.cpp</b> · resolverFilmesDosCinemas() · 114–127
+            </p>
+            <div style="display:flex;flex-direction:column;padding:10px 0px 0px 0px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">114</span>&#160;&#160;<span style="color:#8FB8FF">int</span> inicio = <span
+                  style="color:#F5A3C7">0</span>;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">115</span>&#160;&#160;<span style="color:#8FB8FF">int</span> fim = <span
+                  style="color:#8FB8FF">static_cast</span>&lt;<span style="color:#8FB8FF">int</span>&gt;(filmes.<span
+                  style="color:#FFD479">size</span>()) - <span style="color:#F5A3C7">1</span>;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                <span style="color:#FFD479">116</span>&#160;&#160;<span style="color:#8FB8FF">while</span> (inicio &lt;=
+                fim) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                <span style="color:#FFD479">117</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">int</span> meio = inicio + (fim - inicio) / <span
+                  style="color:#F5A3C7">2</span>;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">118</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">if</span> (filmes[meio].id == codigo) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span
+                  style="color:#6F8396">119</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;posicao =
+                meio;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">120</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">break</span>;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">121</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                <span style="color:#FFD479">122</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">if</span> (filmes[meio].id &lt; codigo) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                <span style="color:#FFD479">123</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;inicio
+                = meio + <span style="color:#F5A3C7">1</span>;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">124</span>&#160;&#160;&#160;&#160;&#160;&#160;} <span
+                  style="color:#8FB8FF">else</span> {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                <span style="color:#FFD479">125</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;fim =
+                meio - <span style="color:#F5A3C7">1</span>;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">126</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">127</span>&#160;&#160;}
+              </p>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:18px">
+            <div
+              style="display:flex;flex-direction:column;gap:6px;background:#111A24;border-radius:16px;padding:22px 26px">
+              <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#5AA0F0">cc00002
+                procura tt8000034</p>
+              <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2">
+                passo&#160;&#160;1 · 584.121 candidatos</p>
+              <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2">
+                passo&#160;&#160;2 · 292.060</p>
+              <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2">
+                passo&#160;&#160;3 · 146.029</p>
+              <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6">…</p>
+              <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#FFD479">passo 19 · 2
+                → achou: posição 37.821</p>
+            </div>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><span style="color:#1A56A0"><b>L117</b></span>
+              inicio + (fim − inicio) / 2 dá o mesmo meio que (inicio + fim) / 2, sem risco de estourar o int.</p>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><span style="color:#1A56A0"><b>L122–125</b></span>
+              compara os códigos como texto e descarta a metade onde o código não pode estar.</p>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955">Código inexistente: o laço termina com <b>inicio</b>
+              no próximo código maior, exatamente o que o Módulo 4 pede.</p>
+          </div>
+        </div>
+      </section>
+      <section id="cinemas" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 112px 150px;display:flex;flex-direction:column;gap:24px">
+        <p
+          style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#1A56A0">
+          Cinemas · opções 2 e 5 do menu</p>
+        <h2 style="font-size:52px;font-weight:700;line-height:1.1">cinemasQueExibem: marcar os filmes e conferir cada
+          cinema</h2>
+        <div style="display:flex;gap:36px;align-items:start">
+          <div
+            style="flex:none;width:900px;display:flex;flex-direction:column;background:#111A24;border-radius:16px;padding:0px 0px 16px 0px">
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;background:#0C141C;padding:10px 24px;border-radius:16px 16px 0px 0px">
+              <b>src/main.cpp</b> · cinemasQueExibem() · 146–160
+            </p>
+            <div style="display:flex;flex-direction:column;padding:10px 0px 0px 0px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                <span style="color:#FFD479">146</span>&#160;&#160;std::vector&lt;<span
+                  style="color:#8FB8FF">char</span>&gt; procurado(totalFilmes, <span style="color:#F5A3C7">0</span>);
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">147</span>&#160;&#160;<span style="color:#8FB8FF">for</span> (<span
+                  style="color:#8FB8FF">int</span> indice : indicesFilmes) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                <span style="color:#FFD479">148</span>&#160;&#160;&#160;&#160;&#160;&#160;procurado[indice] = <span
+                  style="color:#F5A3C7">1</span>;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">149</span>&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">151</span>&#160;&#160;std::vector&lt;<span
+                  style="color:#8FB8FF">int</span>&gt; encontrados;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">152</span>&#160;&#160;<span style="color:#8FB8FF">for</span> (size_t i =
+                <span style="color:#F5A3C7">0</span>; i &lt; cinemas.<span style="color:#FFD479">size</span>(); i++) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">153</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">for</span> (<span style="color:#8FB8FF">int</span> posicao :
+                cinemas[i].filmePosicoes) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+                <span style="color:#FFD479">154</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">if</span> (posicao &gt;= <span style="color:#F5A3C7">0</span> &amp;&amp;
+                procurado[posicao]) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span
+                  style="color:#6F8396">155</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;encontrados.<span
+                  style="color:#FFD479">push_back</span>(<span style="color:#8FB8FF">static_cast</span>&lt;<span
+                  style="color:#8FB8FF">int</span>&gt;(i));
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span
+                  style="color:#6F8396">156</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">break</span>;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">157</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">158</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">159</span>&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:22px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">160</span>&#160;&#160;<span style="color:#8FB8FF">return</span> encontrados;
+              </p>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:18px">
+            <div
+              style="display:grid;grid-template-columns:auto 1fr;gap:12px 16px;align-items:center;background:#111A24;border-radius:16px;padding:22px 26px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;text-align:right">
+                procurado</p>
+              <div style="display:flex;gap:8px">
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;background:#1B2838;border:1px solid #34475C;color:#E3EAF2;padding:2px 12px;border-radius:6px">
+                  0</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:700;background:#5AA0F0;color:#08111A;padding:2px 12px;border-radius:6px">
+                  1</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;background:#1B2838;border:1px solid #34475C;color:#E3EAF2;padding:2px 12px;border-radius:6px">
+                  0</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;background:#1B2838;border:1px solid #34475C;color:#E3EAF2;padding:2px 12px;border-radius:6px">
+                  0</p>
+                <p
+                  style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:700;background:#5AA0F0;color:#08111A;padding:2px 12px;border-radius:6px">
+                  1</p>
+              </div>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2;text-align:right">
+                cinema A</p>
+              <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2">[3, 4] →
+                procurado[4] = 1 → <span style="color:#FFD479">entra</span></p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2;text-align:right">
+                cinema B</p>
+              <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2">[0, 2] →
+                nenhum → fora</p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2;text-align:right">
+                cinema C</p>
+              <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E3EAF2">[−1, 1] →
+                <span style="color:#FFD479">entra</span>
+              </p>
+            </div>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><span style="color:#1A56A0"><b>L146–148</b></span>
+              um char por filme (584 KB): marca com 1 os filmes achados pela busca (índice ou árvore).</p>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><span style="color:#1A56A0"><b>L154</b></span>
+              conferir é acesso a vetor, não comparação de texto; −1 (código inexistente) é ignorado; o break para no
+              primeiro achado.</p>
+          </div>
+        </div>
+      </section>
+      <section id="cache" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 112px 150px;display:flex;flex-direction:column;gap:24px">
+        <p
+          style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#1A56A0">
+          Toda busca · cronômetro e cache</p>
+        <h2 style="font-size:52px;font-weight:700;line-height:1.1">buscarFilmes: mede só a busca e guarda o resultado
+        </h2>
+        <div style="display:flex;flex-direction:column;background:#111A24;border-radius:16px;padding:0px 0px 16px 0px">
+          <p
+            style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;background:#0C141C;padding:10px 24px;border-radius:16px 16px 0px 0px">
+            <b>src/main.cpp</b> · buscarFilmes() · linhas 193–204, sem as linhas em branco
+          </p>
+          <div style="display:flex;flex-direction:column;padding:10px 0px 0px 0px">
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">193</span>&#160;&#160;std::string chave = <span
+                style="color:#FFD479">montarChaveCache</span>(filtros, operador, <span
+                style="color:#F2C48D">"filme"</span>);
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+              <span style="color:#FFD479">195</span>&#160;&#160;<span style="color:#8FB8FF">auto</span> inicio =
+              std::chrono::steady_clock::<span style="color:#FFD479">now</span>();
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">197</span>&#160;&#160;std::vector&lt;<span
+                style="color:#8FB8FF">int</span>&gt; resultado;
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+              <span style="color:#FFD479">198</span>&#160;&#160;<span style="color:#8FB8FF">bool</span> veioDoCache =
+              cache.<span style="color:#FFD479">buscar</span>(chave, resultado);
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">199</span>&#160;&#160;<span style="color:#8FB8FF">if</span> (!veioDoCache) {
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">200</span>&#160;&#160;&#160;&#160;&#160;&#160;resultado = <span
+                style="color:#FFD479">aplicarFiltros</span>(filtros, operador, indiceTipo, indiceGenero);
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+              <span style="color:#FFD479">201</span>&#160;&#160;&#160;&#160;&#160;&#160;cache.<span
+                style="color:#FFD479">adicionar</span>(chave, resultado);
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+              <span style="color:#6F8396">202</span>&#160;&#160;}
+            </p>
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px;background:#2C2A20">
+              <span style="color:#FFD479">204</span>&#160;&#160;<span style="color:#8FB8FF">double</span> milissegundos
+              = <span style="color:#FFD479">milissegundosDesde</span>(inicio);
+            </p>
+          </div>
+        </div>
+        <div style="display:flex;gap:36px;align-items:start">
+          <div
+            style="flex:1;display:flex;flex-direction:column;background:#111A24;border-radius:16px;padding:0px 0px 16px 0px">
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;background:#0C141C;padding:10px 24px;border-radius:16px 16px 0px 0px">
+              <b>src/cache.cpp</b> · CacheConsultas::buscar() · 4–8
+            </p>
+            <div style="display:flex;flex-direction:column;padding:10px 0px 0px 0px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">4</span>&#160;&#160;<span style="color:#8FB8FF">for</span> (size_t i =
+                <span style="color:#F5A3C7">0</span>; i &lt; chaves.<span style="color:#FFD479">size</span>(); i++) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">5</span>&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">if</span> (chaves[i] == chave) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span
+                  style="color:#6F8396">6</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;resultado =
+                resultados[i];
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">7</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#8FB8FF">return true</span>;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#E3EAF2;padding:0px 24px">
+                <span style="color:#6F8396">8</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+              </p>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><span style="color:#1A56A0"><b>L195 /
+                  L204</b></span> o cronômetro só roda depois da digitação e para antes de imprimir.</p>
+            <p style="font-size:24px;line-height:1.4;color:#3E4955"><span style="color:#1A56A0"><b>L198–201</b></span>
+              chave já vista: devolve o resultado guardado; senão calcula e guarda. tvEpisode E Drama: 1,27 ms → 0,02
+              ms.</p>
+          </div>
+        </div>
+      </section>
+      <section id="busca-medida" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:36px">
+        <p
+          style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#1A56A0">
+          Desempenho · buscas</p>
+        <h2 style="font-size:60px;font-weight:700;line-height:1.1">Árvore × olhar os 584 mil filmes</h2>
+        <table style="font-size:28px;color:#111A23">
+          <tr>
+            <th style="width:24%;color:#5B6774">Busca</th>
+            <th style="width:15%;color:#5B6774;text-align:right">Achados</th>
+            <th style="width:16%;color:#5B6774;text-align:right">Nós visitados</th>
+            <th style="width:15%;color:#5B6774;text-align:right">Árvore</th>
+            <th style="width:16%;color:#5B6774;text-align:right">Sequencial</th>
+            <th style="width:14%;color:#5B6774;text-align:right">Vantagem</th>
+          </tr>
+          <tr style="background:#E9F1FB">
+            <td>Ano 2000</td>
+            <td style="text-align:right">5.192</td>
+            <td style="text-align:right">7 de 134</td>
+            <td style="text-align:right">0,0006 ms</td>
+            <td style="text-align:right">3,67 ms</td>
+            <td style="text-align:right"><b>6.411×</b></td>
+          </tr>
+          <tr>
+            <td>Duração 90..120</td>
+            <td style="text-align:right">8.501</td>
+            <td style="text-align:right">39 de 372</td>
+            <td style="text-align:right">0,0036 ms</td>
+            <td style="text-align:right">2,57 ms</td>
+            <td style="text-align:right"><b>711×</b></td>
+          </tr>
+          <tr>
+            <td>Anos 1990..1999</td>
+            <td style="text-align:right">57.239</td>
+            <td style="text-align:right">16 de 134</td>
+            <td style="text-align:right">0,025 ms</td>
+            <td style="text-align:right">3,46 ms</td>
+            <td style="text-align:right"><b>136×</b></td>
+          </tr>
+          <tr>
+            <td>Duração 1..59</td>
+            <td style="text-align:right">153.039</td>
+            <td style="text-align:right">64 de 372</td>
+            <td style="text-align:right">0,074 ms</td>
+            <td style="text-align:right">4,48 ms</td>
+            <td style="text-align:right"><b>61×</b></td>
+          </tr>
+          <tr>
+            <td>Anos 1885..2026</td>
+            <td style="text-align:right">559.303</td>
+            <td style="text-align:right">134 de 134</td>
+            <td style="text-align:right">0,98 ms</td>
+            <td style="text-align:right">5,02 ms</td>
+            <td style="text-align:right"><b>5,1×</b></td>
+          </tr>
+        </table>
+        <p
+          style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#5B6774">
+          Fonte: tests/logs/benchmark.tsv · mediana de 3 execuções</p>
+      </section>
+      <section id="carregamento" data-transition="fade"
+        style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:36px">
+        <p
+          style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#1A56A0">
+          Desempenho · abertura</p>
+        <h2 style="font-size:60px;font-weight:700;line-height:1.1">Abrir leva 0,75 s: 92% é ler o arquivo</h2>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:20px;align-items:center">
+            <p style="width:420px;font-size:28px;text-align:right">Ler e interpretar filmes</p>
+            <div style="width:900px;height:40px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div>
+            <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;font-weight:700">710 ms</p>
+          </div>
+          <div style="display:flex;gap:20px;align-items:center">
+            <p style="width:420px;font-size:28px;text-align:right">Índices tipo / gênero</p>
+            <div style="width:56px;height:40px;background:#2A78D6;border-radius:0px 6px 6px 0px"></div>
+            <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;font-weight:700">44 ms</p>
+          </div>
+          <div style="display:flex;gap:20px;align-items:center">
+            <p style="width:420px;font-size:28px;text-align:right">Árvores (baldes + montar)</p>
+            <div style="width:10px;height:40px;background:#0D8A6A;border-radius:0px 4px 4px 0px"></div>
+            <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;font-weight:700">7,6 ms</p>
+          </div>
+          <div style="display:flex;gap:20px;align-items:center">
+            <p style="width:420px;font-size:28px;text-align:right">Ligar cinema → filme</p>
+            <div style="width:7px;height:40px;background:#2A78D6;border-radius:0px 4px 4px 0px"></div>
+            <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;font-weight:700">5,7 ms</p>
+          </div>
+          <div style="display:flex;gap:20px;align-items:center">
+            <p style="width:420px;font-size:28px;text-align:right">Ler cinemas</p>
+            <div style="width:3px;height:40px;background:#2A78D6"></div>
+            <p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;font-weight:700">1,0 ms</p>
+          </div>
+        </div>
+        <p
+          style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#5B6774">
+          Fonte: tests/logs/benchmark.tsv · grupo "carregamento"</p>
+      </section>
+    <section id="medicao" data-transition="fade"
+      style="background:#F5F6F3;color:#111A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:36px">
+      <p
+        style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#1A56A0">
+        De onde vêm os números</p>
+      <h2 style="font-size:60px;font-weight:700;line-height:1.1">Todo número foi medido rodando código</h2>
+      <div style="display:flex;gap:40px;align-items:start">
+        <div style="flex:1;display:flex;flex-direction:column;gap:16px">
+          <div
+            style="display:flex;flex-direction:column;gap:6px;background:#FFFFFF;border:1px solid #DDE2E6;border-left:6px solid #2A78D6;border-radius:12px;padding:20px 28px">
+            <p style="font-size:28px;font-weight:600">1. O próprio programa</p>
+            <p style="font-size:26px;line-height:1.35;color:#3E4955">mede e mostra o tempo ao abrir (0,75 s) e em cada
+              busca</p>
+          </div>
+          <div
+            style="display:flex;flex-direction:column;gap:6px;background:#FFFFFF;border:1px solid #DDE2E6;border-left:6px solid #2A78D6;border-radius:12px;padding:20px 28px">
+            <p style="font-size:28px;font-weight:600">2. O teste automático</p>
+            <p style="font-size:26px;line-height:1.35;color:#3E4955">703 buscas seguidas, cada tempo anotado: média de
+              0,03 ms</p>
+          </div>
+          <div
+            style="display:flex;flex-direction:column;gap:6px;background:#FFFFFF;border:1px solid #DDE2E6;border-left:6px solid #2A78D6;border-radius:12px;padding:20px 28px">
+            <p style="font-size:28px;font-weight:600">3. O benchmark</p>
+            <p style="font-size:26px;line-height:1.35;color:#3E4955">programa à parte que mede o nosso código e as
+              alternativas que não usamos</p>
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:16px">
+          <div
+            style="display:flex;flex-direction:column;background:#111A24;border-radius:20px;padding:0px 0px 20px 0px">
+            <p
+              style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8EA2B6;background:#0C141C;padding:14px 28px;border-radius:20px 20px 0px 0px">
+              <b>tests/benchmark/benchmark.cpp</b> · medir()
+            </p>
+            <div style="display:flex;flex-direction:column;padding:14px 0px 0px 0px">
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:20px;line-height:1.6;color:#E3EAF2;padding:0px 28px">
+                <span style="color:#6F8396">20</span>&#160;&#160;<span style="color:#8FB8FF">static double</span> <span
+                  style="color:#FFD479">medir</span>(Operacao operacao, <span style="color:#8FB8FF">int</span> repeticoes) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:20px;line-height:1.6;color:#E3EAF2;padding:0px 28px;background:#2C2A20">
+                <span style="color:#FFD479">21</span>&#160;&#160;&#160;&#160;&#160;&#160;<span style="color:#8FB8FF">auto</span> inicio = Relogio::<span
+                  style="color:#FFD479">now</span>();
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:20px;line-height:1.6;color:#E3EAF2;padding:0px 28px;background:#2C2A20">
+                <span style="color:#FFD479">22</span>&#160;&#160;&#160;&#160;&#160;&#160;<span style="color:#8FB8FF">for</span> (<span
+                  style="color:#8FB8FF">int</span> i = <span style="color:#F5A3C7">0</span>; i &lt; repeticoes; i++) {
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:20px;line-height:1.6;color:#E3EAF2;padding:0px 28px;background:#2C2A20">
+                <span style="color:#FFD479">23</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span
+                  style="color:#FFD479">operacao</span>();
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:20px;line-height:1.6;color:#E3EAF2;padding:0px 28px">
+                <span style="color:#6F8396">24</span>&#160;&#160;&#160;&#160;&#160;&#160;}
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:20px;line-height:1.6;color:#E3EAF2;padding:0px 28px;background:#2C2A20">
+                <span style="color:#FFD479">25</span>&#160;&#160;&#160;&#160;&#160;&#160;<span style="color:#8FB8FF">return</span>
+                <span style="color:#FFD479">milissegundosDesde</span>(inicio) / repeticoes;
+              </p>
+              <p
+                style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:20px;line-height:1.6;color:#E3EAF2;padding:0px 28px">
+                <span style="color:#6F8396">26</span>&#160;&#160;}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  </div>
+  <div id="contador"></div>
+  <script>
+    const secoes = Array.from(document.querySelectorAll("section"));
+    const trilho = document.getElementById("trilho");
+    const contador = document.getElementById("contador");
+    let atual = Math.max(0, Math.min(secoes.length - 1, (parseInt(location.hash.slice(1), 10) || 1) - 1));
+    function mostrar(indice) {
+      atual = Math.max(0, Math.min(secoes.length - 1, indice));
+      secoes.forEach((secao, i) => secao.classList.toggle("atual", i === atual));
+      contador.textContent = (atual + 1) + " / " + secoes.length;
+      history.replaceState(null, "", "#" + (atual + 1));
+    }
+    function ajustar() {
+      const escala = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+      trilho.style.transform = "scale(" + escala + ")";
+    }
+    document.addEventListener("keydown", (evento) => {
+      if (["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"].includes(evento.key)) { mostrar(atual + 1); evento.preventDefault(); }
+      if (["ArrowLeft", "ArrowUp", "PageUp", "Backspace"].includes(evento.key)) { mostrar(atual - 1); evento.preventDefault(); }
+      if (evento.key === "Home") mostrar(0);
+      if (evento.key === "End") mostrar(secoes.length - 1);
+      if (evento.key === "f" || evento.key === "F") {
+        if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen();
+      }
+    });
+    document.addEventListener("click", (evento) => mostrar(evento.clientX < window.innerWidth / 3 ? atual - 1 : atual + 1));
+    window.addEventListener("resize", ajustar);
+    ajustar();
+    mostrar(atual);
+  </script>
+</body>
+</html>

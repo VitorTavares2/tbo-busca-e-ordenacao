@@ -32,3 +32,8 @@ bash tests/rodar_testes.sh
 g++ -O2 -std=c++17 -static tests/benchmark/*.cpp src/carregador.cpp src/indice.cpp src/arvore.cpp src/texto.cpp src/cache.cpp -o benchmark.exe
 ./benchmark.exe
 ```
+
+## Apresentação
+
+- [apresentacao/apresentacao.pdf](apresentacao/apresentacao.pdf)
+- [apresentacao/apresentacao.html](apresentacao/apresentacao.html): abrir no navegador; setas para navegar, `F` para tela cheia.
